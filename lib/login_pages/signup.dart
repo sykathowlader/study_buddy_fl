@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/services/auth.dart';
+import 'package:study_buddy_fl/widgets/reusable/loading.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _SignupState extends State<Signup> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   @override
   void dispose() {
@@ -30,177 +32,184 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              SizedBox(height: 20), // Adjust the size to fit your design
-              // Logo - Replace with your image asset
-              Image.asset(
-                'assets/sb_logo.png', // Replace with your logo asset path
-                height: 120, // Set your logo's height
-              ),
-              SizedBox(height: 20),
-
-              // Sign in text
-              Text(
-                'Sign Up',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 50),
-
-              //full name
-              TextFormField(
-                controller: _fullNameController,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter full Name';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Email TextField
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  // Regular expression for email validation
-                  String pattern =
-                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                  RegExp regex = RegExp(pattern);
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  } else if (!regex.hasMatch(value)) {
-                    return 'Enter a valid email address';
-                  }
-                  return null; // Return null if the input is valid
-                },
-              ),
-              SizedBox(height: 20),
-
-              // Password TextField
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                        _isObscure ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isObscure = !_isObscure;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: _isObscure,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password'; // Check for non-empty input
-                  } else if (value.length < 6) {
-                    return 'Password must be at least 6 characters'; // Check for minimum length
-                  }
-                  return null; // Return null if the input is valid
-                },
-              ),
-              SizedBox(height: 20),
-              // Confirm Password TextField
-              TextFormField(
-                controller: _confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isObscureConfirmPassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+    return loading
+        ? Loading()
+        : Scaffold(
+            body: SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    SizedBox(height: 20), // Adjust the size to fit your design
+                    // Logo - Replace with your image asset
+                    Image.asset(
+                      'assets/sb_logo.png', // Replace with your logo asset path
+                      height: 120, // Set your logo's height
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _isObscureConfirmPassword = !_isObscureConfirmPassword;
-                      });
-                    },
-                  ),
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: _isObscureConfirmPassword,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password'; // Check for non-empty input
-                  } else if (_passwordController.text != value) {
-                    return 'Passwords do not match'; // Check if passwords match
-                  }
-                  return null; // Return null if the input is valid
-                },
-              ),
-              SizedBox(height: 20),
+                    SizedBox(height: 20),
 
-              // Sign up Button
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    if (_passwordController.text ==
-                        _confirmPasswordController.text) {
-                      // Use AuthService to sign up
-                      var user = await AuthService().signUp(
-                          _emailController.text, _passwordController.text);
-                      if (user != null) {
-                        // Sign up successful, navigate to home or show a success message
-                        Navigator.pushNamed(context,
-                            '/home'); // Adjust according to your route settings
-                      } else {
-                        // Sign up failed, show an error message
-                        print('Sign up failed');
-                      }
-                    } else {
-                      // Passwords don't match, show an error message
-                      print('Passwords do not match');
-                    }
-                  }
-                },
-                child: Text('Sign Up'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  textStyle: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(height: 30),
+                    // Sign in text
+                    Text(
+                      'Sign Up',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 50),
 
-              // Return to Login Screen
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                  child: Text('Already have an account? Sign In'),
+                    //full name
+                    TextFormField(
+                      controller: _fullNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter full Name';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Email TextField
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        // Regular expression for email validation
+                        String pattern =
+                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                        RegExp regex = RegExp(pattern);
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (!regex.hasMatch(value)) {
+                          return 'Enter a valid email address';
+                        }
+                        return null; // Return null if the input is valid
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Password TextField
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(_isObscure
+                              ? Icons.visibility_off
+                              : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _isObscure = !_isObscure;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: _isObscure,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password'; // Check for non-empty input
+                        } else if (value.length < 6) {
+                          return 'Password must be at least 6 characters'; // Check for minimum length
+                        }
+                        return null; // Return null if the input is valid
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    // Confirm Password TextField
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        prefixIcon: Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isObscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isObscureConfirmPassword =
+                                  !_isObscureConfirmPassword;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: _isObscureConfirmPassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        } else if (_passwordController.text != value) {
+                          return 'Passwords do not match';
+                        }
+                        return null; // Return null if the input is valid
+                      },
+                    ),
+                    SizedBox(height: 20),
+
+                    // Sign up Button
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          // Use AuthService to sign up
+                          setState(() {
+                            loading = true;
+                          });
+                          String? signUpError = await _authService.signUp(
+                              _emailController.text, _passwordController.text);
+
+                          if (signUpError == null) {
+                            // Sign up successful, navigate to home or show a success message
+                            loading = false;
+                            Navigator.pushNamed(context, '/home');
+                          } else {
+                            // Sign up failed, show an error message
+                            loading = false;
+                            final snackBar =
+                                SnackBar(content: Text(signUpError));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          }
+                        }
+                      },
+                      child: Text('Sign Up'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        textStyle: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+
+                    // Return to Login Screen
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/login');
+                        },
+                        child: Text('Already have an account? Sign In'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 }

@@ -4,14 +4,21 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Sign up with email and password
-  Future<User?> signUp(String email, String password) async {
+  Future<String?> signUp(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return result.user;
-    } catch (error) {
-      print(error);
-      return null;
+      return null; // No error
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        return 'The email address is already in use by another account.';
+      } else {
+        // Handle other FirebaseAuth issues
+        return e.message; // Generic error message
+      }
+    } catch (e) {
+      print(e.toString());
+      return 'An error occurred, please try again later.';
     }
   }
 
