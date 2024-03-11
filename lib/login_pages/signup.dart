@@ -19,6 +19,7 @@ class _SignupState extends State<Signup> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _universityController = TextEditingController();
   bool loading = false;
 
   @override
@@ -43,11 +44,11 @@ class _SignupState extends State<Signup> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    SizedBox(height: 20), // Adjust the size to fit your design
-                    // Logo - Replace with your image asset
+                    SizedBox(height: 20),
+                    // Logo
                     Image.asset(
-                      'assets/sb_logo.png', // Replace with your logo asset path
-                      height: 120, // Set your logo's height
+                      'assets/sb_logo.png',
+                      height: 120,
                     ),
                     SizedBox(height: 20),
 
@@ -100,6 +101,15 @@ class _SignupState extends State<Signup> {
                       },
                     ),
                     SizedBox(height: 20),
+
+                    TextFormField(
+                      controller: _universityController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter your university',
+                        prefixIcon: Icon(Icons.school),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
 
                     // Password TextField
                     TextFormField(
