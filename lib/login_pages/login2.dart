@@ -115,7 +115,7 @@ class _Login2State extends State<Login2> {
                             Navigator.pushNamed(context, '/home');
                           } else {
                             // Sign in failed
-                            loading = false;
+                            setState(() => loading = false);
                             showDialog(
                               context: context,
                               builder: (context) => AlertDialog(

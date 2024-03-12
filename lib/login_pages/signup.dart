@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/services/auth.dart';
+import 'package:study_buddy_fl/widgets/signup_widgets/list_unis.dart';
 import 'package:study_buddy_fl/widgets/reusable/loading.dart';
+import 'package:study_buddy_fl/widgets/signup_widgets/study_level.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -20,7 +22,9 @@ class _SignupState extends State<Signup> {
       TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _universityController = TextEditingController();
+  final TextEditingController _courseController = TextEditingController();
   bool loading = false;
+  var _studyLevel;
 
   @override
   void dispose() {
@@ -102,13 +106,28 @@ class _SignupState extends State<Signup> {
                     ),
                     SizedBox(height: 20),
 
+                    // Selection of universities
+
+                    UniversityAutocomplete(controller: _universityController),
+                    SizedBox(height: 20),
+
+                    // selection of university course
                     TextFormField(
-                      controller: _universityController,
+                      controller: _courseController,
                       decoration: InputDecoration(
-                        labelText: 'Enter your university',
-                        prefixIcon: Icon(Icons.school),
+                        labelText: 'Enter your course',
+                        prefixIcon: Icon(Icons.subject),
                         border: OutlineInputBorder(),
                       ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    StudyLevelSelector(
+                      onSelectionChanged: (StudyLevel? level) {
+                        _studyLevel = level;
+                        print(_studyLevel);
+                      },
                     ),
 
                     // Password TextField
@@ -181,12 +200,22 @@ class _SignupState extends State<Signup> {
                           setState(() {
                             loading = true;
                           });
+                          String studyLevelString =
+                              _studyLevel.toString().split('.').last;
+
                           String? signUpError = await _authService.signUp(
-                              _emailController.text, _passwordController.text);
+                            _emailController.text,
+                            _passwordController.text,
+                            _fullNameController.text,
+                            _universityController.text,
+                            _courseController.text,
+                            studyLevelString,
+                          );
 
                           if (signUpError == null) {
-                            // Sign up successful, navigate to home or show a success message
+                            // Sign up successful, navigate to home
                             loading = false;
+
                             Navigator.pushNamed(context, '/home');
                           } else {
                             // Sign up failed, show an error message
