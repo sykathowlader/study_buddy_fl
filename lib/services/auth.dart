@@ -61,4 +61,9 @@ class AuthService {
       return null;
     }
   }
+
+  // Method to get current user UID
+  String? getCurrentUserId() {
+    return _auth.currentUser?.uid;
+  }
 }

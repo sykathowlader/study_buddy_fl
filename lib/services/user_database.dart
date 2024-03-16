@@ -21,6 +21,15 @@ class UserDatabase {
       'university': university,
       'course': course,
       'studyLevel': studyLevel,
+      'profileImageUrl':
+          "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg"
+    });
+  }
+
+// Method to update profile image URL in user document
+  Future<void> updateUserProfileImageUrl(String imageUrl) async {
+    return await userCollection.doc(uid).update({
+      'profileImageUrl': imageUrl,
     });
   }
 }

@@ -112,7 +112,7 @@ class _Login2State extends State<Login2> {
                               _emailController.text, _passwordController.text);
                           if (user != null) {
                             // Sign in successful
-                            Navigator.pushNamed(context, '/home');
+                            Navigator.pushNamed(context, '/main_navigation');
                           } else {
                             // Sign in failed
                             setState(() => loading = false);
