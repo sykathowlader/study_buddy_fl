@@ -4,8 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_buddy_fl/profile/edit_profile.dart';
+import 'package:study_buddy_fl/profile/interests_section.dart';
+import 'package:study_buddy_fl/services/auth.dart';
 import 'package:study_buddy_fl/services/storage_service.dart';
 import 'package:study_buddy_fl/services/user_database.dart';
+
+// This is the profile page where the user can see its information and edit in case needed
 
 class ProfilePage extends StatefulWidget {
   final String userId;
@@ -17,6 +21,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
   late StorageService _storageService;
@@ -27,6 +32,11 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController _universityController = TextEditingController();
   TextEditingController _courseController = TextEditingController();
   TextEditingController _studyLevelController = TextEditingController();
+  String? _currentStudyLevel;
+  Map<String, dynamic>? _userData;
+  List<String> _interests = []; // List to hold interests
+  TextEditingController _interestController =
+      TextEditingController(); // Controller for the input field
 
   @override
   void dispose() {
@@ -35,15 +45,34 @@ class _ProfilePageState extends State<ProfilePage> {
     _universityController.dispose();
     _courseController.dispose();
     _studyLevelController.dispose();
+    _interestController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    // Initialize storageService and userDatabase with the user's UID
     _storageService = StorageService(uid: widget.userId);
     _userDatabase = UserDatabase(uid: widget.userId);
+    _fetchUserDataAndPopulateFields(); // fetching user data in init method
+    fetchUserInterests();
+  }
+
+  Future<void> fetchUserInterests() async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('userInterests')
+        .doc(widget.userId)
+        .get();
+
+    // Cast snapshot.data() to Map<String, dynamic> to ensure the correct type.
+    Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
+
+    if (snapshot.exists && data != null && data.containsKey('interests')) {
+      List<dynamic> interests = data['interests'];
+      setState(() {
+        _interests = List<String>.from(interests);
+      });
+    }
   }
 
   Future<Map<String, dynamic>?> fetchUserData() async {
@@ -57,6 +86,28 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _fetchUserDataAndPopulateFields() async {
+    setState(() {
+      _isLoading = true; // Start loading
+    });
+    var userData = await fetchUserData();
+    if (userData != null) {
+      setState(() {
+        _userData = userData;
+        _fullNameController.text = userData['fullName'] ?? '';
+        _emailController.text = userData['email'] ?? '';
+        _universityController.text = userData['university'] ?? '';
+        _courseController.text = userData['course'] ?? '';
+        _currentStudyLevel = userData['studyLevel'] ?? '';
+        _isLoading = false; // Done loading
+      });
+    } else {
+      setState(() {
+        _isLoading = false; // Error or no data
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,17 +115,20 @@ class _ProfilePageState extends State<ProfilePage> {
         title: const Text('Profile'),
         actions: [
           IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await _authService.signOut(); // Sign out the user
+              Navigator.of(context)
+                  .pushReplacementNamed('/login'); // Navigate to sign-in screen
+            },
+          ),
+          IconButton(
               icon: Icon(Icons.edit),
               onPressed: () async {
-                // Fetch user data
-                var userData = await fetchUserData();
-                if (userData != null) {
-                  // Populate controllers with fetched data
-                  _fullNameController.text = userData['fullName'] ?? '';
-                  _emailController.text = userData['email'] ?? '';
-                  _universityController.text = userData['university'] ?? '';
-                  _courseController.text = userData['course'] ?? '';
-                  _studyLevelController.text = userData['studyLevel'] ?? '';
+                if (_userData != null) {
+                  // upon pressing the edit button a dialog will appear showing
+                  // the pre existing data of the user. The user can modify these fields
+                  // and then cancel or save.
 
                   EditProfileDialog.showEditDialog(
                     context: context,
@@ -82,9 +136,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     emailController: _emailController,
                     universityController: _universityController,
                     courseController: _courseController,
-                    studyLevelController: _studyLevelController,
-                    onSave: () {
-                      _saveProfileInfo();
+                    currentStudyLevel: _currentStudyLevel!,
+                    onSave: (String fullName, String email, String university,
+                        String course, String studyLevel) async {
+                      await _saveProfileInfo(
+                          fullName, email, university, course, studyLevel);
+                      await _fetchUserDataAndPopulateFields(); // Refetch and update UI
                     },
                   );
                 }
@@ -118,7 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         width: double.maxFinite,
                                         child: Image.network(
                                           userData['profileImageUrl'] ??
-                                              'https://via.placeholder.com/150',
+                                              'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg',
                                           fit: BoxFit.contain,
                                         ),
                                       ),
@@ -127,8 +184,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 },
                                 child: CircleAvatar(
                                   radius: 50,
-                                  backgroundImage:
-                                      NetworkImage(userData['profileImageUrl']),
+                                  backgroundImage: NetworkImage(
+                                    userData['profileImageUrl'] ??
+                                        'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg',
+                                  ),
                                 ),
                               ),
                               Container(
@@ -189,6 +248,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(userData['course'] ?? 'Course not available'),
                         SizedBox(height: 4),
                         Text('Study Level: ${userData['studyLevel']}'),
+                        SizedBox(height: 20),
+                        InterestsSection(
+                          initialInterests: _interests,
+                          userId: widget.userId,
+                        ),
                       ],
                     );
                   } else if (snapshot.hasError) {
@@ -249,17 +313,15 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _saveProfileInfo() async {
-    // Assuming you have a method to update user data in Firestore
-    // For example, using an instance of a class that manages Firestore operations:
+// saving the edit
+  Future<void> _saveProfileInfo(String fullName, String email,
+      String university, String course, String studyLevel) async {
     await _userDatabase.updateUserData(
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      university: _universityController.text,
-      course: _courseController.text,
-      studyLevel: _studyLevelController.text,
+      fullName: fullName,
+      email: email,
+      university: university,
+      course: course,
+      studyLevel: studyLevel,
     );
-
-    Navigator.of(context).pop(); // Close the dialog after saving
   }
 }

@@ -15,14 +15,27 @@ class UserDatabase {
       required String university,
       required String course,
       required String studyLevel}) async {
+    return await userCollection.doc(uid).update({
+      'fullName': fullName,
+      'email': email,
+      'university': university,
+      'course': course,
+      'studyLevel': studyLevel,
+    });
+  }
+
+  Future<void> createUserData(
+      {required String fullName,
+      required String email,
+      required String university,
+      required String course,
+      required String studyLevel}) async {
     return await userCollection.doc(uid).set({
       'fullName': fullName,
       'email': email,
       'university': university,
       'course': course,
       'studyLevel': studyLevel,
-      'profileImageUrl':
-          "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg"
     });
   }
 

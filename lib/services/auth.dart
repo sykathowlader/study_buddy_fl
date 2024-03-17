@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:study_buddy_fl/services/user_database.dart';
 
@@ -11,7 +12,7 @@ class AuthService {
       UserCredential result = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // Assuming the user was created, now I'm their info to Firestore
+      // Assuming the user was created, now I'm storing their info to Firestore
       // Extract the UID of the newly created user
       String uid = result.user!.uid;
 
@@ -19,13 +20,14 @@ class AuthService {
       UserDatabase userDatabase = UserDatabase(uid: uid);
 
       // Call the method to update the user data in Firestore
-      await userDatabase.updateUserData(
+      await userDatabase.createUserData(
         fullName: fullName,
         email: email,
         university: university,
         course: course,
         studyLevel: studyLevel,
       );
+      initializeUserInterests(uid);
 
       return null; // No error
     } on FirebaseAuthException catch (e) {
@@ -65,5 +67,14 @@ class AuthService {
   // Method to get current user UID
   String? getCurrentUserId() {
     return _auth.currentUser?.uid;
+  }
+
+  Future<void> initializeUserInterests(String userId) async {
+    await FirebaseFirestore.instance
+        .collection('userInterests')
+        .doc(userId)
+        .set({
+      'interests': [],
+    });
   }
 }
