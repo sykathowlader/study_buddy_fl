@@ -5,6 +5,7 @@ import 'package:study_buddy_fl/home_pages/main_navigation.dart';
 import 'package:study_buddy_fl/login_pages/login2.dart';
 import 'package:study_buddy_fl/login_pages/signup.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
+import 'package:study_buddy_fl/study/study_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Login2(),
+      home: StudyPage(),
       routes: {
         '/login': (context) => Login2(),
         '/signup': (context) => Signup(),
