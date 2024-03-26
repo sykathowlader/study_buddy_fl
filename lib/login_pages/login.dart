@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/services/auth.dart';
 import 'package:study_buddy_fl/widgets/reusable/loading.dart';
 
-class Login2 extends StatefulWidget {
+class Login extends StatefulWidget {
   @override
   _Login2State createState() => _Login2State();
 }
 
-class _Login2State extends State<Login2> {
+class _Login2State extends State<Login> {
   bool _isObscure = true; // State for password visibility
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();

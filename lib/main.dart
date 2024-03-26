@@ -2,10 +2,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/firebase_options.dart';
 import 'package:study_buddy_fl/home_pages/main_navigation.dart';
-import 'package:study_buddy_fl/login_pages/login2.dart';
+import 'package:study_buddy_fl/login_pages/login.dart';
 import 'package:study_buddy_fl/login_pages/signup.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
+import 'package:study_buddy_fl/study/create_session_form.dart';
+import 'package:study_buddy_fl/study/search_session.dart';
 import 'package:study_buddy_fl/study/study_page.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +34,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: StudyPage(),
+      home: Login(),
       routes: {
-        '/login': (context) => Login2(),
+        '/login': (context) => Login(),
         '/signup': (context) => Signup(),
         '/main_navigation': (context) => MainNavigation(),
+        '/search_sessions': (context) => SessionSearchForm(),
       },
     );
   }

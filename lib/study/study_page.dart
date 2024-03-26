@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:study_buddy_fl/home_pages/main_navigation.dart';
+import 'package:study_buddy_fl/study/create_session_form.dart';
 import 'package:study_buddy_fl/study/option_card.dart';
+import 'package:study_buddy_fl/study/search_session.dart';
+import 'package:study_buddy_fl/study/upcoming_session.dart';
 
 class StudyPage extends StatelessWidget {
   const StudyPage({super.key});
@@ -21,12 +25,12 @@ class StudyPage extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Expanded(
-                  flex: 2, // Takes 2/3 of the space
+                  flex: 1, // Takes 2/3 of the space
                   child: OptionCard(
                     title: "Join a Session",
                     color: Colors.blue.shade300, // Example color
                     onTap: () {
-                      // Placeholder for onTap function
+                      Navigator.pushNamed(context, '/search_sessions');
                     },
                   ),
                 ),
@@ -36,8 +40,28 @@ class StudyPage extends StatelessWidget {
                     title: "Create a Session",
                     color: Colors.green.shade300, // Example color
                     onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding: MediaQuery.of(context)
+                                .viewInsets, // Adjusts padding for the keyboard
+                            child:
+                                CreateSessionForm(), // Pass the session to be edited
+                          );
+                        },
+                      );
                       // Placeholder for onTap function
                     },
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: OptionCard(
+                    title: "Manage your sessions",
+                    color: Colors.green,
+                    onTap: () {},
                   ),
                 ),
               ],
@@ -46,13 +70,10 @@ class StudyPage extends StatelessWidget {
           Expanded(
             child: Container(
               // Placeholder for the upcoming sessions list
-              color: Colors.green,
+              //color: Color.fromARGB(255, 208, 220, 209),
               alignment: Alignment.center,
               padding: EdgeInsets.all(16),
-              child: Text(
-                "Upcoming Study Sessions will be listed here",
-                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-              ),
+              child: UpcomingSessionsList(),
             ),
           ),
         ],

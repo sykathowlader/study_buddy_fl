@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:study_buddy_fl/profile/edit_profile.dart';
@@ -12,9 +13,7 @@ import 'package:study_buddy_fl/services/user_database.dart';
 // This is the profile page where the user can see its information and edit in case needed
 
 class ProfilePage extends StatefulWidget {
-  final String userId;
-
-  const ProfilePage({Key? key, required this.userId}) : super(key: key);
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -22,6 +21,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final AuthService _authService = AuthService();
+  final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
   late StorageService _storageService;
@@ -52,8 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _storageService = StorageService(uid: widget.userId);
-    _userDatabase = UserDatabase(uid: widget.userId);
+
+    _storageService = StorageService(uid: _userId);
+    _userDatabase = UserDatabase(uid: _userId);
     _fetchUserDataAndPopulateFields(); // fetching user data in init method
     fetchUserInterests();
   }
@@ -61,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserInterests() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('userInterests')
-        .doc(widget.userId)
+        .doc(_userId)
         .get();
 
     // Cast snapshot.data() to Map<String, dynamic> to ensure the correct type.
@@ -78,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<Map<String, dynamic>?> fetchUserData() async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(widget.userId).get();
+          await _firestore.collection('users').doc(_userId).get();
       return userDoc.data() as Map<String, dynamic>?;
     } catch (e) {
       print("Error fetching user data: $e");
@@ -251,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         SizedBox(height: 20),
                         InterestsSection(
                           initialInterests: _interests,
-                          userId: widget.userId,
+                          userId: _userId,
                         ),
                       ],
                     );
