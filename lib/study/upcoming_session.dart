@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -8,13 +9,20 @@ import 'study_session_model.dart'; // Correct the import path according to your 
 
 class UpcomingSessionsList extends StatelessWidget {
   final Stream<List<StudySession>>? customStream;
-  const UpcomingSessionsList({Key? key, this.customStream}) : super(key: key);
+  final bool isEditable;
+  final bool showJoinButton;
+  const UpcomingSessionsList({
+    Key? key,
+    this.customStream,
+    this.isEditable = true,
+    this.showJoinButton = true,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     Stream<List<StudySession>> stream = customStream ??
-        StudySessionDatabase().fetchUserStudySessionsStream(userId!);
+        StudySessionDatabase().fetchParticipatingStudySessionsStream(userId!);
 
     // Check for user authentication
     if (userId == null) {
@@ -62,6 +70,7 @@ class UpcomingSessionsList extends StatelessWidget {
           itemBuilder: (context, index) {
             StudySession session = filteredSessions[index];
             bool isCurrentUserSession = session.userId == userId;
+            bool isUserParticipating = session.participantIDs.contains(userId);
 
             return Card(
               color: Color.fromARGB(255, 187, 215, 188),
@@ -91,9 +100,42 @@ class UpcomingSessionsList extends StatelessWidget {
                       Text("Description: ${session.description}",
                           style: TextStyle(fontSize: 16)),
                     // Icons and buttons row
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        if (showJoinButton && !isCurrentUserSession)
+                          TextButton.icon(
+                            icon: isUserParticipating
+                                ? Icon(Icons.check, size: 20)
+                                : Icon(Icons.add, size: 20),
+                            label:
+                                Text(isUserParticipating ? 'Joined' : 'Join'),
+                            onPressed: () async {
+                              if (!isUserParticipating) {
+                                // Add current user ID to participantIDs and update participantNumber
+                                await FirebaseFirestore.instance
+                                    .collection('studySessions')
+                                    .doc(session.sessionId)
+                                    .update({
+                                  'participantIDs':
+                                      FieldValue.arrayUnion([userId]),
+                                  'participantNumber': FieldValue.increment(1),
+                                });
+                              } else {
+                                // Remove current user ID from participantIDs and decrement participantNumber
+                                await FirebaseFirestore.instance
+                                    .collection('studySessions')
+                                    .doc(session.sessionId)
+                                    .update({
+                                  'participantIDs':
+                                      FieldValue.arrayRemove([userId]),
+                                  'participantNumber': FieldValue.increment(-1),
+                                });
+                              }
+                              // You may also want to show a snackbar or refresh the list to reflect changes
+                            },
+                          ),
                         // Recurring session icon
                         if (session.isRecurring) Icon(Icons.repeat, size: 20),
 
@@ -116,7 +158,7 @@ class UpcomingSessionsList extends StatelessWidget {
                         const SizedBox(width: 10),
 
                         // Edit button
-                        if (isCurrentUserSession)
+                        if (isCurrentUserSession && isEditable)
                           IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () {
@@ -139,7 +181,7 @@ class UpcomingSessionsList extends StatelessWidget {
                             },
                           ),
                         // Delete button
-                        if (isCurrentUserSession)
+                        if (isCurrentUserSession && isEditable)
                           IconButton(
                               icon: Icon(Icons.delete, size: 20),
                               onPressed: () {

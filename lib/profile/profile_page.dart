@@ -251,7 +251,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text('Study Level: ${userData['studyLevel']}'),
                         SizedBox(height: 20),
                         InterestsSection(
-                          initialInterests: _interests,
                           userId: _userId,
                         ),
                       ],

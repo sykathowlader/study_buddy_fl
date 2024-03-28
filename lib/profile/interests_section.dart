@@ -2,12 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class InterestsSection extends StatefulWidget {
-  final List<String> initialInterests;
   final String userId;
 
   const InterestsSection({
     super.key,
-    required this.initialInterests,
     required this.userId,
   });
 
@@ -16,13 +14,28 @@ class InterestsSection extends StatefulWidget {
 }
 
 class _InterestSectionState extends State<InterestsSection> {
-  late List<String> interests;
+  late List<String> interests = [];
   final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    interests = List.from(widget.initialInterests);
+    fetchInterests();
+  }
+
+  void fetchInterests() async {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('userInterests')
+        .doc(widget.userId)
+        .get();
+    if (snapshot.exists && snapshot.data() is Map) {
+      final data = snapshot.data() as Map<String, dynamic>;
+      if (data.containsKey('interests')) {
+        setState(() {
+          interests = List.from(data['interests']);
+        });
+      }
+    }
   }
 
   @override
@@ -43,16 +56,14 @@ class _InterestSectionState extends State<InterestsSection> {
             Expanded(child: Divider(thickness: 4)),
           ],
         ),
-        SizedBox(height: 10), // Add some spacing
+        SizedBox(height: 10),
         Wrap(
           spacing: 8.0,
           children: interests
               .map((interest) => Chip(
                     label: Text(interest),
-                    backgroundColor:
-                        Colors.green[200], // Set chip background color
-                    deleteIconColor:
-                        Colors.white, // Set delete icon color if needed
+                    backgroundColor: Colors.green[200],
+                    deleteIconColor: Colors.white,
                     onDeleted: () => _removeInterest(interest),
                   ))
               .toList(),
@@ -77,8 +88,8 @@ class _InterestSectionState extends State<InterestsSection> {
     if (interest.isNotEmpty && !interests.contains(interest)) {
       setState(() {
         interests.add(interest);
-        _controller.clear();
       });
+      _controller.clear();
       _updateInterestsInFirestore();
     }
   }
@@ -94,8 +105,8 @@ class _InterestSectionState extends State<InterestsSection> {
     await FirebaseFirestore.instance
         .collection('userInterests')
         .doc(widget.userId)
-        .update({
+        .set({
       'interests': interests,
-    });
+    }, SetOptions(merge: true));
   }
 }

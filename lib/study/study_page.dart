@@ -20,51 +20,46 @@ class StudyPage extends StatelessWidget {
       ),
       body: Column(
         children: <Widget>[
-          SizedBox(
-            height: cardHeight, // Apply dynamic height
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 1, // Takes 2/3 of the space
-                  child: OptionCard(
-                    title: "Join a Session",
-                    color: Colors.blue.shade300, // Example color
-                    onTap: () {
-                      Navigator.pushNamed(context, '/search_sessions');
-                    },
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: SizedBox(
+              height: cardHeight, // Apply dynamic height
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1, // Takes 2/3 of the space
+                    child: OptionCard(
+                      title: "Join a Session",
+                      color: Colors.blue.shade300, // Example color
+                      onTap: () {
+                        Navigator.pushNamed(context, '/search_sessions');
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 1, // Takes 1/3 of the space
-                  child: OptionCard(
-                    title: "Create a Session",
-                    color: Colors.green.shade300, // Example color
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (BuildContext context) {
-                          return Padding(
-                            padding: MediaQuery.of(context)
-                                .viewInsets, // Adjusts padding for the keyboard
-                            child:
-                                CreateSessionForm(), // Pass the session to be edited
-                          );
-                        },
-                      );
-                      // Placeholder for onTap function
-                    },
+                  Expanded(
+                    flex: 1, // Takes 1/3 of the space
+                    child: OptionCard(
+                      title: "Create a Session",
+                      color: Colors.green.shade300, // Example color
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (BuildContext context) {
+                            return Padding(
+                              padding: MediaQuery.of(context)
+                                  .viewInsets, // Adjusts padding for the keyboard
+                              child:
+                                  CreateSessionForm(), // Pass the session to be edited
+                            );
+                          },
+                        );
+                        // Placeholder for onTap function
+                      },
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: OptionCard(
-                    title: "Manage your sessions",
-                    color: Colors.green,
-                    onTap: () {},
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -73,7 +68,9 @@ class StudyPage extends StatelessWidget {
               //color: Color.fromARGB(255, 208, 220, 209),
               alignment: Alignment.center,
               padding: EdgeInsets.all(16),
-              child: UpcomingSessionsList(),
+              child: UpcomingSessionsList(
+                showJoinButton: true,
+              ),
             ),
           ),
         ],

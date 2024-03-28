@@ -102,6 +102,35 @@ class StudySessionDatabase {
             .toList());
   }
 
+  Stream<List<StudySession>> fetchParticipatingStudySessionsStream(
+      String userId) {
+    return _db
+        .collection('studySessions')
+        .where('participantIDs', arrayContains: userId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => StudySession.fromFirestore(
+                doc.data() as Map<String, dynamic>, doc.id))
+            .toList());
+  }
+
+//  Stream<List<StudySession>> fetchParticipatingStudySessionsStream(String userId) {
+//   return FirebaseFirestore.instance
+//       .collection('studySessions')
+//       .where('participantIDs', arrayContains: userId)
+//       .snapshots()
+//       .map((QuerySnapshot snapshot) {
+//         List<StudySession> sessions = [];
+//         for (var doc in snapshot.docs) {
+//           var data = doc.data() as Map<String, dynamic>?;
+//           if (data != null) { // Ensure data is not null
+//             sessions.add(StudySession.fromFirestore(data, doc.id));
+//           }
+//         }
+//         return sessions;
+//       });
+// }
+
   Future<void> deleteStudySession(String sessionId) async {
     await _db.collection('studySessions').doc(sessionId).delete();
   }

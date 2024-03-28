@@ -29,16 +29,15 @@ class _MainNavigationState extends State<MainNavigation> {
   // Get current user
 
   // list of all screen that are reacheable from the bottomNavigatorBar
-
+  final List<Widget> _pages = [
+    HomePage(),
+    SearchPage(),
+    StudyPage(),
+    MessagePage(),
+    ProfilePage(),
+  ];
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = [
-      HomePage(),
-      SearchPage(),
-      StudyPage(),
-      MessagePage(),
-      ProfilePage(),
-    ];
     return Scaffold(
       // using indexstack I am preserving the state of the pages.
       //If I navigate from search page to message page and then again to search page

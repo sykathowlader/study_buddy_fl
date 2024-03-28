@@ -20,7 +20,10 @@ class _SessionSearchFormState extends State<SessionSearchForm> {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => Scaffold(
         appBar: AppBar(title: Text("Search Results")),
-        body: UpcomingSessionsList(customStream: searchResultsStream),
+        body: UpcomingSessionsList(
+          customStream: searchResultsStream,
+          isEditable: false,
+        ),
       ),
     ));
   }
