@@ -1,4 +1,5 @@
 class UserModel {
+  final String userId;
   final String fullName;
   final String email;
   final String university;
@@ -7,6 +8,7 @@ class UserModel {
   final String studyLevel;
 
   UserModel({
+    required this.userId,
     required this.fullName,
     required this.email,
     required this.university,
@@ -17,6 +19,7 @@ class UserModel {
 
   factory UserModel.fromFirestore(Map<String, dynamic> firestore) {
     return UserModel(
+      userId: firestore['userId'] as String,
       fullName: firestore['fullName'] as String,
       email: firestore['email'] as String,
       university: firestore['university'] as String,

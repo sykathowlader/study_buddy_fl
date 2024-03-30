@@ -20,6 +20,7 @@ class UserDatabase {
     required String studyLevel,
   }) async {
     Map<String, dynamic> userData = {
+      'userId': uid,
       'fullName': fullName,
       'email': email,
       'university': university,

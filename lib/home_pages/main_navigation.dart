@@ -19,6 +19,7 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int current_index = 0;
+  final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
   void changePage(int index) {
     setState(() {
@@ -29,15 +30,20 @@ class _MainNavigationState extends State<MainNavigation> {
   // Get current user
 
   // list of all screen that are reacheable from the bottomNavigatorBar
-  final List<Widget> _pages = [
-    HomePage(),
-    SearchPage(),
-    StudyPage(),
-    MessagePage(),
-    ProfilePage(),
-  ];
+
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _pages = [
+      HomePage(),
+      SearchPage(),
+      StudyPage(),
+      MessagePage(),
+      ProfilePage(
+        userId: _userId,
+        isUserProfile: true,
+        modifyInterest: true,
+      ),
+    ];
     return Scaffold(
       // using indexstack I am preserving the state of the pages.
       //If I navigate from search page to message page and then again to search page

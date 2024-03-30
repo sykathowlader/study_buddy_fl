@@ -12,11 +12,11 @@ class UpcomingSessionsList extends StatelessWidget {
   final bool isEditable;
   final bool showJoinButton;
   const UpcomingSessionsList({
-    Key? key,
+    super.key,
     this.customStream,
     this.isEditable = true,
     this.showJoinButton = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

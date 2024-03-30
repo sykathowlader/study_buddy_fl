@@ -13,7 +13,15 @@ import 'package:study_buddy_fl/services/user_database.dart';
 // This is the profile page where the user can see its information and edit in case needed
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final bool isUserProfile;
+  final String userId;
+  final bool modifyInterest;
+
+  const ProfilePage(
+      {super.key,
+      required this.userId,
+      this.isUserProfile = true,
+      required this.modifyInterest});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -21,7 +29,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final AuthService _authService = AuthService();
-  final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  //final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
   late StorageService _storageService;
@@ -53,8 +61,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    _storageService = StorageService(uid: _userId);
-    _userDatabase = UserDatabase(uid: _userId);
+    _storageService = StorageService(uid: widget.userId);
+    _userDatabase = UserDatabase(uid: widget.userId);
     _fetchUserDataAndPopulateFields(); // fetching user data in init method
     fetchUserInterests();
   }
@@ -62,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserInterests() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('userInterests')
-        .doc(_userId)
+        .doc(widget.userId)
         .get();
 
     // Cast snapshot.data() to Map<String, dynamic> to ensure the correct type.
@@ -79,7 +87,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<Map<String, dynamic>?> fetchUserData() async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(_userId).get();
+          await _firestore.collection('users').doc(widget.userId).get();
       return userDoc.data() as Map<String, dynamic>?;
     } catch (e) {
       print("Error fetching user data: $e");
@@ -115,38 +123,40 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () async {
-              await _authService.signOut(); // Sign out the user
-              Navigator.of(context)
-                  .pushReplacementNamed('/login'); // Navigate to sign-in screen
-            },
-          ),
-          IconButton(
-              icon: Icon(Icons.edit),
+          if (widget.isUserProfile)
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                if (_userData != null) {
-                  // upon pressing the edit button a dialog will appear showing
-                  // the pre existing data of the user. The user can modify these fields
-                  // and then cancel or save.
+                await _authService.signOut(); // Sign out the user
+                Navigator.of(context).pushReplacementNamed(
+                    '/login'); // Navigate to sign-in screen
+              },
+            ),
+          if (widget.isUserProfile)
+            IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () async {
+                  if (_userData != null) {
+                    // upon pressing the edit button a dialog will appear showing
+                    // the pre existing data of the user. The user can modify these fields
+                    // and then cancel or save.
 
-                  EditProfileDialog.showEditDialog(
-                    context: context,
-                    fullNameController: _fullNameController,
-                    emailController: _emailController,
-                    universityController: _universityController,
-                    courseController: _courseController,
-                    currentStudyLevel: _currentStudyLevel!,
-                    onSave: (String fullName, String email, String university,
-                        String course, String studyLevel) async {
-                      await _saveProfileInfo(
-                          fullName, email, university, course, studyLevel);
-                      await _fetchUserDataAndPopulateFields(); // Refetch and update UI
-                    },
-                  );
-                }
-              }),
+                    EditProfileDialog.showEditDialog(
+                      context: context,
+                      fullNameController: _fullNameController,
+                      emailController: _emailController,
+                      universityController: _universityController,
+                      courseController: _courseController,
+                      currentStudyLevel: _currentStudyLevel!,
+                      onSave: (String fullName, String email, String university,
+                          String course, String studyLevel) async {
+                        await _saveProfileInfo(
+                            fullName, email, university, course, studyLevel);
+                        await _fetchUserDataAndPopulateFields(); // Refetch and update UI
+                      },
+                    );
+                  }
+                }),
         ],
       ),
       body: _isLoading
@@ -191,48 +201,49 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
+                              if (widget.isUserProfile)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.add_a_photo,
+                                        color: Colors.green),
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return SafeArea(
+                                            child: Wrap(
+                                              children: <Widget>[
+                                                ListTile(
+                                                  leading:
+                                                      Icon(Icons.photo_library),
+                                                  title: Text('Select Photo'),
+                                                  onTap: () {
+                                                    _pickImage();
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the bottom sheet
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  leading: Icon(Icons.delete),
+                                                  title: Text('Remove Photo'),
+                                                  onTap: () {
+                                                    _removeProfileImage();
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the bottom sheet
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
-                                child: IconButton(
-                                  icon: Icon(Icons.add_a_photo,
-                                      color: Colors.green),
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return SafeArea(
-                                          child: Wrap(
-                                            children: <Widget>[
-                                              ListTile(
-                                                leading:
-                                                    Icon(Icons.photo_library),
-                                                title: Text('Select Photo'),
-                                                onTap: () {
-                                                  _pickImage();
-                                                  Navigator.of(context)
-                                                      .pop(); // Close the bottom sheet
-                                                },
-                                              ),
-                                              ListTile(
-                                                leading: Icon(Icons.delete),
-                                                title: Text('Remove Photo'),
-                                                onTap: () {
-                                                  _removeProfileImage();
-                                                  Navigator.of(context)
-                                                      .pop(); // Close the bottom sheet
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -251,7 +262,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text('Study Level: ${userData['studyLevel']}'),
                         SizedBox(height: 20),
                         InterestsSection(
-                          userId: _userId,
+                          userId: widget.userId,
+                          modifyInterest: widget.modifyInterest,
                         ),
                       ],
                     );

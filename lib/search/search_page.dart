@@ -1,8 +1,8 @@
-import "package:cloud_firestore/cloud_firestore.dart";
-import "package:firebase_auth/firebase_auth.dart";
-import "package:flutter/material.dart";
-import "package:study_buddy_fl/search/result_page.dart";
-import "package:study_buddy_fl/search/user_model.dart";
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:study_buddy_fl/search/result_page.dart';
+import 'package:study_buddy_fl/search/user_model.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,6 +15,36 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _universityController = TextEditingController();
   final TextEditingController _courseController = TextEditingController();
+
+  Future<List<UserModel>> searchUsers(
+      String fullName, String university, String course) async {
+    // Create a query against the collection.
+    Query query = FirebaseFirestore.instance.collection('users');
+
+    // Add conditions based on the input fields
+    if (fullName.isNotEmpty) {
+      // Assume fullNameKeywords is an array of keywords for searching
+      query = query.where('fullNameKeywords',
+          arrayContains: fullName.toLowerCase());
+    }
+    if (university.isNotEmpty) {
+      query = query.where('universityKeywords',
+          arrayContains: university.toLowerCase());
+    }
+    if (course.isNotEmpty) {
+      query =
+          query.where('courseKeywords', arrayContains: course.toLowerCase());
+    }
+
+    // Execute the query
+    QuerySnapshot snapshot = await query.get();
+
+    // Map the documents to UserModel
+    return snapshot.docs
+        .map((doc) =>
+            UserModel.fromFirestore(doc.data() as Map<String, dynamic>))
+        .toList();
+  }
 
   void _search() async {
     List<UserModel> users = await searchUsers(
@@ -79,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: _search,
                 child: Text('Search', style: TextStyle(fontSize: 18)),
               ),
             ),
@@ -96,6 +126,4 @@ class _SearchPageState extends State<SearchPage> {
     _courseController.dispose();
     super.dispose();
   }
-
-  searchUsers(String text, String text2, String text3) {}
 }

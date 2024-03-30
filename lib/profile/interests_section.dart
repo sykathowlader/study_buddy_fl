@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 class InterestsSection extends StatefulWidget {
   final String userId;
+  final bool modifyInterest;
 
   const InterestsSection({
     super.key,
     required this.userId,
+    this.modifyInterest = true,
   });
 
   @override
@@ -64,21 +66,24 @@ class _InterestSectionState extends State<InterestsSection> {
                     label: Text(interest),
                     backgroundColor: Colors.green[200],
                     deleteIconColor: Colors.white,
-                    onDeleted: () => _removeInterest(interest),
+                    onDeleted: widget.modifyInterest
+                        ? () => _removeInterest(interest)
+                        : null,
                   ))
               .toList(),
         ),
-        TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            labelText: 'Add interest',
-            suffixIcon: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: _addInterest,
+        if (widget.modifyInterest)
+          TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              labelText: 'Add interest',
+              suffixIcon: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: _addInterest,
+              ),
+              border: InputBorder.none,
             ),
-            border: InputBorder.none,
           ),
-        ),
       ],
     );
   }
