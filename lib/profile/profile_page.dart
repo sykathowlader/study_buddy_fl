@@ -4,9 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:study_buddy_fl/profile/connection_message_bars.dart';
 import 'package:study_buddy_fl/profile/edit_profile.dart';
 import 'package:study_buddy_fl/profile/interests_section.dart';
 import 'package:study_buddy_fl/services/auth.dart';
+import 'package:study_buddy_fl/services/profile_page_service.dart';
 import 'package:study_buddy_fl/services/storage_service.dart';
 import 'package:study_buddy_fl/services/user_database.dart';
 
@@ -32,6 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   //final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final ImagePicker _picker = ImagePicker();
+  final ProfilePageServices _profilePageServices = ProfilePageServices();
   late StorageService _storageService;
   late UserDatabase _userDatabase;
   bool _isLoading = false;
@@ -260,6 +263,29 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(userData['course'] ?? 'Course not available'),
                         SizedBox(height: 4),
                         Text('Study Level: ${userData['studyLevel']}'),
+                        SizedBox(height: 10),
+                        if (widget.isUserProfile)
+                          FutureBuilder<int>(
+                            future:
+                                _profilePageServices.fetchConnectionsCount(),
+                            builder: (context, connectionsSnapshot) {
+                              if (connectionsSnapshot.connectionState ==
+                                  ConnectionState.done) {
+                                return Text(
+                                    "Connections: ${connectionsSnapshot.data}",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ));
+                              } else {
+                                return CircularProgressIndicator();
+                              }
+                            },
+                          ),
+                        if (!widget.isUserProfile)
+                          ConnectionMessageBars(
+                            targetUserId: widget.userId,
+                          ),
                         SizedBox(height: 20),
                         InterestsSection(
                           userId: widget.userId,
