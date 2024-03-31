@@ -34,9 +34,9 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      HomePage(),
-      SearchPage(),
+      //HomePage(),
       StudyPage(),
+      SearchPage(),
       MessagePage(),
       ProfilePage(
         userId: _userId,
@@ -60,19 +60,20 @@ class _MainNavigationState extends State<MainNavigation> {
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         items: [
-          BottomNavigationBarItem(
+          /* BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "Home",
+            backgroundColor: Colors.green[300],
+          ),
+           */
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event_note),
+            label: "Study Session",
             backgroundColor: Colors.green[300],
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: "Search",
-            backgroundColor: Colors.green[300],
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event_note),
-            label: "Study Session",
             backgroundColor: Colors.green[300],
           ),
           BottomNavigationBarItem(

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/message/message.dart';
+import 'package:study_buddy_fl/profile/profile_page.dart';
 import 'package:study_buddy_fl/search/user_model.dart';
 import 'package:study_buddy_fl/services/messages_services.dart';
 
@@ -48,24 +49,38 @@ class _MessageScreenState extends State<MessageScreen> {
       appBar: AppBar(
         title: receiverUser == null
             ? Text("Loading...")
-            : Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(receiverUser!
-                            .profileImageUrl ??
-                        'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg'),
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(receiverUser!.fullName,
-                          style: TextStyle(fontSize: 18)),
-                      Text(receiverUser!.university,
-                          style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                ],
+            : GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        userId: widget.receiverUserId,
+                        isUserProfile: false,
+                        modifyInterest: false,
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(receiverUser!
+                              .profileImageUrl ??
+                          'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg'),
+                    ),
+                    SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(receiverUser!.fullName,
+                            style: TextStyle(fontSize: 18)),
+                        Text(receiverUser!.university,
+                            style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
         centerTitle: false,
       ),

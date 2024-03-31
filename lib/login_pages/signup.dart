@@ -216,7 +216,8 @@ class _SignupState extends State<Signup> {
                             // Sign up successful, navigate to home
                             loading = false;
 
-                            Navigator.pushNamed(context, '/main_navigation');
+                            Navigator.pushReplacementNamed(
+                                context, '/main_navigation');
                           } else {
                             // Sign up failed, show an error message
                             loading = false;
