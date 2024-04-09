@@ -21,19 +21,14 @@ class _SearchPageState extends State<SearchPage> {
     // Create a query against the collection.
     Query query = FirebaseFirestore.instance.collection('users');
 
-    // Add conditions based on the input fields
-    if (fullName.isNotEmpty) {
-      // Assume fullNameKeywords is an array of keywords for searching
-      query = query.where('fullNameKeywords',
-          arrayContains: fullName.toLowerCase());
-    }
-    if (university.isNotEmpty) {
-      query = query.where('universityKeywords',
-          arrayContains: university.toLowerCase());
-    }
-    if (course.isNotEmpty) {
-      query =
-          query.where('courseKeywords', arrayContains: course.toLowerCase());
+    // Generate search keywords from the input fields
+    List<String> searchKeywords =
+        _generateSearchKeywords(fullName, university, course);
+
+    if (searchKeywords.isNotEmpty) {
+      // This is a simplified example. In practice, you might need to handle this differently,
+      // as Firestore does not support querying for multiple arrayContains in a single query.
+      query = query.where('searchKeywords', arrayContainsAny: searchKeywords);
     }
 
     // Execute the query
@@ -46,17 +41,87 @@ class _SearchPageState extends State<SearchPage> {
         .toList();
   }
 
-  void _search() async {
-    List<UserModel> users = await searchUsers(
-      _fullNameController.text,
-      _universityController.text,
-      _courseController.text,
-    );
+  List<String> _generateSearchKeywords(
+      String fullName, String university, String course) {
+    Set<String> keywords = {};
+    // Break down each field into words and add them to the keywords set
+    keywords.addAll(fullName.toLowerCase().split(' '));
+    keywords.addAll(university.toLowerCase().split(' '));
+    keywords.addAll(course.toLowerCase().split(' '));
 
-    // Navigate to your results page
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => ResultsPage(users: users)),
-    );
+    // Generate all possible combinations of keywords to enhance searchability
+    List<String> combinations = [];
+    for (String keyword1 in keywords) {
+      for (String keyword2 in keywords) {
+        if (keyword1 != keyword2) {
+          combinations.add('$keyword1 $keyword2');
+        }
+      }
+      combinations.add(keyword1); // Also add the individual keyword
+    }
+
+    return combinations
+        .toSet()
+        .toList(); // Convert to list and remove duplicates
+  }
+
+  void _search() async {
+    // Check if all the fields are empty
+    if (_fullNameController.text.isEmpty &&
+        _universityController.text.isEmpty &&
+        _courseController.text.isEmpty) {
+      // Display a message to the user to enter search criteria
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Search Criteria Required"),
+            content: Text("Please enter at least one search criteria."),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Proceed with the search if there's at least one non-empty field
+      List<UserModel> users = await searchUsers(
+        _fullNameController.text,
+        _universityController.text,
+        _courseController.text,
+      );
+
+      // Navigate to your results page
+      if (users.isEmpty) {
+        // If no users found, show a message or handle as needed
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("No Results Found"),
+              content: Text("No users found matching the search criteria."),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => ResultsPage(users: users)),
+        );
+      }
+    }
   }
 
   @override

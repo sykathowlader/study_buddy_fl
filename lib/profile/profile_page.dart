@@ -131,9 +131,36 @@ class _ProfilePageState extends State<ProfilePage> {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
-                await _authService.signOut(); // Sign out the user
-                Navigator.of(context).pushReplacementNamed(
-                    '/login'); // Navigate to sign-in screen
+                // Show a dialog to confirm log out
+                bool confirmLogout = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Log Out'),
+                          content: Text('Do you want to log out?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(context)
+                                  .pop(false), // User pressed "No"
+                              child: Text('No'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context)
+                                  .pop(true), // User pressed "Yes"
+                              child: Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    ) ??
+                    false; // Dialog returns false if dismissed
+
+                // If user confirmed log out, then sign out and navigate
+                if (confirmLogout) {
+                  await _authService.signOut(); // Sign out the user
+                  Navigator.of(context).pushReplacementNamed(
+                      '/login'); // Navigate to sign-in screen
+                }
               },
             ),
           if (widget.isUserProfile)

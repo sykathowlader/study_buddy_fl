@@ -14,53 +14,65 @@ class _SessionSearchFormState extends State<SessionSearchForm> {
   final TextEditingController _locationController = TextEditingController();
 
   void _searchSessions() {
-    // Pass controller values to performSearch
-    var searchResultsStream = performSearch();
+    if (_topicController.text.isEmpty &&
+        _courseController.text.isEmpty &&
+        _locationController.text.isEmpty) {
+      // If all fields are empty, show a dialog/alert to inform the user
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Search Criteria Needed"),
+            content:
+                Text("Please enter a search criteria to find study sessions."),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // If there's at least one non-empty field, proceed with the search
+      var searchResultsStream = performSearch();
 
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Scaffold(
-        appBar: AppBar(title: Text("Search Results")),
-        body: UpcomingSessionsList(
-          customStream: searchResultsStream,
-          isEditable: false,
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text("Search Results")),
+          body: UpcomingSessionsList(
+            customStream: searchResultsStream,
+            isEditable: false,
+          ),
         ),
-      ),
-    ));
+      ));
+    }
   }
 
   Stream<List<StudySession>> performSearch() {
     Query query = FirebaseFirestore.instance.collection('studySessions');
 
-    List<String> searchTerms = [];
-    if (_topicController.text.isNotEmpty) {
-      searchTerms.add(_sanitizeAndCombineInputs(_topicController.text));
-    }
-    if (_courseController.text.isNotEmpty) {
-      searchTerms.add(_sanitizeAndCombineInputs(_courseController.text));
-    }
-    if (_locationController.text.isNotEmpty) {
-      searchTerms.add(_sanitizeAndCombineInputs(_locationController.text));
+    // Generate search keywords from the input fields
+    List<String> searchKeywords = _generateSearchKeywords(
+      _topicController.text,
+      _courseController.text,
+      _locationController.text,
+    );
+
+    if (searchKeywords.isNotEmpty) {
+      // Adjust the query to use the 'searchKeywords' field for searching
+      query = query.where('combinations', arrayContainsAny: searchKeywords);
     }
 
-    // Iterate through each search term and apply filters accordingly
-    // This example assumes you're okay with fetching all data and then filtering in memory due to Firestore limitations
-    // Remember: This approach might not be efficient for large datasets
+    // Execute the query and map the snapshots to StudySession objects
     return query.snapshots().map((snapshot) {
-      var sessions = snapshot.docs
+      return snapshot.docs
           .map((doc) => StudySession.fromFirestore(
               doc.data() as Map<String, dynamic>, doc.id))
           .toList();
-
-      if (searchTerms.isEmpty) {
-        return sessions;
-      }
-
-      return sessions.where((session) {
-        var combinedSessionTerms = _sanitizeAndCombineInputs(
-            '${session.courseId} ${session.topic} ${session.city}');
-        // Return sessions where any of the search terms is a match
-        return searchTerms.any((term) => combinedSessionTerms.contains(term));
-      }).toList();
     });
   }
 
@@ -69,38 +81,29 @@ class _SessionSearchFormState extends State<SessionSearchForm> {
     return input.toLowerCase().replaceAll(RegExp('[^A-Za-z0-9]'), '');
   }
 
-  /* Stream<List<StudySession>> performSearch() {
-    Query query = FirebaseFirestore.instance.collection('studySessions');
+  List<String> _generateSearchKeywords(
+      String fullName, String university, String course) {
+    Set<String> keywords = {};
+    // Break down each field into words and add them to the keywords set
+    keywords.addAll(fullName.toLowerCase().split(' '));
+    keywords.addAll(university.toLowerCase().split(' '));
+    keywords.addAll(course.toLowerCase().split(' '));
 
-    // Transform the input text for searching: lowercase and remove commas and spaces for broad matching.
-    String formatSearchText(String text) {
-      return text.toLowerCase().replaceAll(',', '').replaceAll(' ', '');
+    // Generate all possible combinations of keywords to enhance searchability
+    List<String> combinations = [];
+    for (String keyword1 in keywords) {
+      for (String keyword2 in keywords) {
+        if (keyword1 != keyword2) {
+          combinations.add('$keyword1 $keyword2');
+        }
+      }
+      combinations.add(keyword1); // Also add the individual keyword
     }
 
-    // Check if topic search text is provided and not empty
-    if (_topicController.text.isNotEmpty) {
-      String searchTopic = formatSearchText(_topicController.text);
-      query = query.where('combinations', arrayContains: searchTopic);
-    }
-
-    // Check if course search text is provided and not empty
-    if (_courseController.text.isNotEmpty) {
-      String searchCourse = formatSearchText(_courseController.text);
-      query = query.where('combinations', arrayContains: searchCourse);
-    }
-
-    // Check if university (or location in this context) search text is provided and not empty
-    if (_locationController.text.isNotEmpty) {
-      String searchUniversity = formatSearchText(_locationController.text);
-      query = query.where('combinations', arrayContains: searchUniversity);
-    }
-
-    // The return statement remains unchanged, mapping the snapshot documents to your StudySession model.
-    return query.snapshots().map((snapshot) => snapshot.docs
-        .map((doc) => StudySession.fromFirestore(
-            doc.data() as Map<String, dynamic>, doc.id))
-        .toList());
-  } */
+    return combinations
+        .toSet()
+        .toList(); // Convert to list and remove duplicates
+  }
 
   @override
   Widget build(BuildContext context) {

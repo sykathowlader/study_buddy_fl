@@ -19,6 +19,10 @@ class UserDatabase {
     required String course,
     required String studyLevel,
   }) async {
+    // Generate combined search keywords from fullName, university, and course
+    List<String> searchKeywords =
+        _generateSearchKeywords(fullName, university, course);
+
     Map<String, dynamic> userData = {
       'userId': uid,
       'fullName': fullName,
@@ -26,9 +30,7 @@ class UserDatabase {
       'university': university,
       'course': course,
       'studyLevel': studyLevel,
-      'fullNameKeywords': generateSearchKeywords(fullName),
-      'universityKeywords': generateSearchKeywords(university),
-      'courseKeywords': generateSearchKeywords(course),
+      'searchKeywords': searchKeywords, // Use combined search keywords
     };
 
     await userCollection.doc(uid).set(userData);
@@ -41,28 +43,44 @@ class UserDatabase {
     required String course,
     required String studyLevel,
   }) async {
+    // Generate combined search keywords from fullName, university, and course
+    List<String> searchKeywords =
+        _generateSearchKeywords(fullName, university, course);
+
     Map<String, dynamic> userData = {
       'fullName': fullName,
       'email': email,
       'university': university,
       'course': course,
       'studyLevel': studyLevel,
-      'fullNameKeywords': generateSearchKeywords(fullName),
-      'universityKeywords': generateSearchKeywords(university),
-      'courseKeywords': generateSearchKeywords(course),
+      'searchKeywords': searchKeywords, // Use combined search keywords
     };
 
     await userCollection.doc(uid).update(userData);
   }
 
-  List<String> generateSearchKeywords(String input) {
-    // Remove special characters, convert to lowercase, and split by spaces
-    return input
-        .toLowerCase()
-        .replaceAll(RegExp('[^a-z0-9\\s]'), '')
-        .split(' ')
-        .where((s) => s.isNotEmpty)
-        .toList();
+  List<String> _generateSearchKeywords(
+      String fullName, String university, String course) {
+    Set<String> keywords = {};
+    // Break down each field into words and add them to the keywords set
+    keywords.addAll(fullName.toLowerCase().split(' '));
+    keywords.addAll(university.toLowerCase().split(' '));
+    keywords.addAll(course.toLowerCase().split(' '));
+
+    // Generate all possible combinations of keywords to enhance searchability
+    List<String> combinations = [];
+    for (String keyword1 in keywords) {
+      for (String keyword2 in keywords) {
+        if (keyword1 != keyword2) {
+          combinations.add('$keyword1 $keyword2');
+        }
+      }
+      combinations.add(keyword1); // Also add the individual keyword
+    }
+
+    return combinations
+        .toSet()
+        .toList(); // Convert to list and remove duplicates
   }
 
   // Method to update user data

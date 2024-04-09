@@ -9,7 +9,7 @@ class StudySessionDatabase {
   Future<void> addStudySession(StudySession session) async {
     Map<String, dynamic> sessionData = session.toMap();
     // Generate all combinations
-    sessionData['combinations'] = _generateCombinationsFromFields(
+    sessionData['combinations'] = _generateSearchKeywords(
       session.courseId,
       session.topic,
       session.city,
@@ -25,7 +25,7 @@ class StudySessionDatabase {
       String sessionId, StudySession session) async {
     Map<String, dynamic> sessionData = session.toMap();
     // Generate all combinations for updated session
-    sessionData['combinations'] = _generateCombinationsFromFields(
+    sessionData['combinations'] = _generateSearchKeywords(
       session.courseId,
       session.topic,
       session.city,
@@ -34,6 +34,30 @@ class StudySessionDatabase {
         .collection('studySessions')
         .doc(sessionId)
         .update(sessionData);
+  }
+
+  List<String> _generateSearchKeywords(
+      String fullName, String university, String course) {
+    Set<String> keywords = {};
+    // Break down each field into words and add them to the keywords set
+    keywords.addAll(fullName.toLowerCase().split(' '));
+    keywords.addAll(university.toLowerCase().split(' '));
+    keywords.addAll(course.toLowerCase().split(' '));
+
+    // Generate all possible combinations of keywords to enhance searchability
+    List<String> combinations = [];
+    for (String keyword1 in keywords) {
+      for (String keyword2 in keywords) {
+        if (keyword1 != keyword2) {
+          combinations.add('$keyword1 $keyword2');
+        }
+      }
+      combinations.add(keyword1); // Also add the individual keyword
+    }
+
+    return combinations
+        .toSet()
+        .toList(); // Convert to list and remove duplicates
   }
 
   List<List<T>> _generateSubsets<T>(List<T> list) {

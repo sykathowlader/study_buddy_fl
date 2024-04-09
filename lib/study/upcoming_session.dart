@@ -107,12 +107,6 @@ class UpcomingSessionsList extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.message, size: 20),
-                          onPressed: () {},
-                        ),
-                        const SizedBox(width: 10),
-
                         if (showJoinButton && !isCurrentUserSession)
                           TextButton.icon(
                             icon: isUserParticipating
@@ -132,17 +126,47 @@ class UpcomingSessionsList extends StatelessWidget {
                                   'participantNumber': FieldValue.increment(1),
                                 });
                               } else {
-                                // Remove current user ID from participantIDs and decrement participantNumber
-                                await FirebaseFirestore.instance
-                                    .collection('studySessions')
-                                    .doc(session.sessionId)
-                                    .update({
-                                  'participantIDs':
-                                      FieldValue.arrayRemove([userId]),
-                                  'participantNumber': FieldValue.increment(-1),
-                                });
+                                // Ask user if they really want to leave the session
+                                bool confirmLeave = await showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Leave Session'),
+                                          content: Text(
+                                              'Do you want to leave this session?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(
+                                                      false), // User pressed "No"
+                                              child: Text('No'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(
+                                                      true), // User pressed "Yes"
+                                              child: Text('Yes'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ) ??
+                                    false; // Dialog returns false if dismissed
+
+                                // If user confirmed to leave, then remove from participantIDs and decrement participantNumber
+                                if (confirmLeave) {
+                                  await FirebaseFirestore.instance
+                                      .collection('studySessions')
+                                      .doc(session.sessionId)
+                                      .update({
+                                    'participantIDs':
+                                        FieldValue.arrayRemove([userId]),
+                                    'participantNumber':
+                                        FieldValue.increment(-1),
+                                  });
+                                  // Optionally, show a snackbar or refresh the list to reflect changes
+                                }
                               }
-                              // You may also want to show a snackbar or refresh the list to reflect changes
                             },
                           ),
                         // Recurring session icon
