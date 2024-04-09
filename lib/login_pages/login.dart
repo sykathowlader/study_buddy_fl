@@ -144,7 +144,7 @@ class _Login2State extends State<Login> {
                     ),
                     SizedBox(height: 30),
 
-                    // Divider (Or Log in with)
+                    // Divider (Or Sign in with)
                     Row(
                       children: <Widget>[
                         Expanded(child: Divider(thickness: 2)),

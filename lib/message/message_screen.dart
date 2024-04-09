@@ -9,8 +9,7 @@ import 'package:study_buddy_fl/services/messages_services.dart';
 class MessageScreen extends StatefulWidget {
   final String receiverUserId;
 
-  const MessageScreen({Key? key, required this.receiverUserId})
-      : super(key: key);
+  const MessageScreen({super.key, required this.receiverUserId});
 
   @override
   State<MessageScreen> createState() => _MessageScreenState();
@@ -94,6 +93,16 @@ class _MessageScreenState extends State<MessageScreen> {
                 if (snapshot.hasData) {
                   var docList = snapshot.data!.docs;
 
+                  // Check if the messages are loaded for the first time and scroll to the bottom
+                  if (docList.isNotEmpty && !_scrollController.hasClients) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (_scrollController.hasClients) {
+                        _scrollController
+                            .jumpTo(_scrollController.position.maxScrollExtent);
+                      }
+                    });
+                  }
+
                   return ListView.builder(
                     controller: _scrollController,
                     itemCount: docList.length,
@@ -162,11 +171,16 @@ class _MessageScreenState extends State<MessageScreen> {
       await _messageService.sendMessage(
           widget.receiverUserId, _messageController.text.trim());
       _messageController.clear();
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent + 100,
-        curve: Curves.easeOut,
-        duration: const Duration(milliseconds: 300),
-      );
+      //list scrolls to the bottom to show the latest message
+      if (_scrollController.hasClients) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 300),
+          );
+        });
+      }
     }
   }
 

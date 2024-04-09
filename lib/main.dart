@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/firebase_options.dart';
@@ -34,7 +35,26 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Login(),
+      navigatorKey: navigatorKey,
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          // Checking the authentication state
+          if (snapshot.connectionState == ConnectionState.active) {
+            User? user = snapshot.data;
+            if (user == null) {
+              return Login(); // If not signed in, show Login
+            }
+            return MainNavigation(); // If signed in, show Main Navigation
+          }
+          return Scaffold(
+            body: Center(
+              child:
+                  CircularProgressIndicator(), // Show loading screen while checking auth state
+            ),
+          );
+        },
+      ),
       routes: {
         '/login': (context) => Login(),
         '/signup': (context) => Signup(),

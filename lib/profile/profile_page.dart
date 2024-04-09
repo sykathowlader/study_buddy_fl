@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:study_buddy_fl/profile/connection_list_screen.dart';
 import 'package:study_buddy_fl/profile/connection_message_bars.dart';
 import 'package:study_buddy_fl/profile/edit_profile.dart';
 import 'package:study_buddy_fl/profile/interests_section.dart';
@@ -271,12 +272,24 @@ class _ProfilePageState extends State<ProfilePage> {
                             builder: (context, connectionsSnapshot) {
                               if (connectionsSnapshot.connectionState ==
                                   ConnectionState.done) {
-                                return Text(
-                                    "Connections: ${connectionsSnapshot.data}",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ));
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigate to the ConnectionsListScreen on tap
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ConnectionsListScreen(
+                                            currentUserId: widget
+                                                .userId), // Ensure you pass the current user's ID correctly
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                      "Connections: ${connectionsSnapshot.data}",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                );
                               } else {
                                 return CircularProgressIndicator();
                               }

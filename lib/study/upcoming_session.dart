@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:study_buddy_fl/message/message_screen.dart';
+import 'package:study_buddy_fl/search/user_model.dart';
 import 'package:study_buddy_fl/services/study_session_service.dart';
 import 'package:study_buddy_fl/study/create_session_form.dart';
+import 'package:study_buddy_fl/study/participant_list.dart';
 import 'study_session_model.dart'; // Correct the import path according to your project structure
 
 class UpcomingSessionsList extends StatelessWidget {
@@ -104,6 +107,12 @@ class UpcomingSessionsList extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        IconButton(
+                          icon: Icon(Icons.message, size: 20),
+                          onPressed: () {},
+                        ),
+                        const SizedBox(width: 10),
+
                         if (showJoinButton && !isCurrentUserSession)
                           TextButton.icon(
                             icon: isUserParticipating
@@ -141,7 +150,22 @@ class UpcomingSessionsList extends StatelessWidget {
 
                         // Participant info
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () async {
+                            String? sessionId = session
+                                .sessionId; // Get the session ID for which to fetch participants
+                            StudySessionDatabase studySessionDb =
+                                StudySessionDatabase();
+                            List<UserModel> participants = await studySessionDb
+                                .fetchSessionParticipants(sessionId!);
+
+                            // Navigate to the SessionParticipantsList screen with the fetched participants
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => SessionParticipantsList(
+                                    participants: participants),
+                              ),
+                            );
+                          },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

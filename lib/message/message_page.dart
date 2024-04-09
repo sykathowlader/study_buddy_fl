@@ -49,9 +49,9 @@ class _MessagePageState extends State<MessagePage> {
           if (snapshot.hasError) {
             return Text('Something went wrong');
           }
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          /*  if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
-          }
+          } */
 
           final users = snapshot.data!;
           if (users.isEmpty) {

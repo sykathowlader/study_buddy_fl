@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
 import 'package:study_buddy_fl/search/user_model.dart';
@@ -9,6 +10,8 @@ class ResultsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       appBar: AppBar(title: Text('Search Results')),
       body: ListView.builder(
@@ -24,13 +27,14 @@ class ResultsPage extends StatelessWidget {
             title: Text(user.fullName),
             subtitle: Text(subtitleText),
             onTap: () {
+              bool isUserProfile = user.userId == currentUserId;
               // Assuming you have a modified ProfilePage that accepts a userId
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => ProfilePage(
                             userId: user.userId,
-                            isUserProfile: false,
+                            isUserProfile: isUserProfile,
                             modifyInterest: false,
                           )));
             },

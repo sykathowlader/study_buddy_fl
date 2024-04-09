@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class Loading extends StatelessWidget {
   const Loading({super.key});
@@ -6,9 +6,22 @@ class Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(0, 175, 51, 51),
+      color: Colors.white, // Set background color to white
       child: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Use minimum space
+          children: <Widget>[
+            Image.asset(
+              'assets/sb_logo.png', // Path to your logo asset
+              height: 120, // Set a height for the logo
+            ),
+            SizedBox(height: 30), // Space between logo and loading bar
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.grey), // Set the color of the loading bar
+            ),
+          ],
+        ),
       ),
     );
   }

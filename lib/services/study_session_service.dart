@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:study_buddy_fl/search/user_model.dart';
 import 'package:study_buddy_fl/study/study_session_model.dart';
 
 class StudySessionDatabase {
@@ -133,5 +134,31 @@ class StudySessionDatabase {
 
   Future<void> deleteStudySession(String sessionId) async {
     await _db.collection('studySessions').doc(sessionId).delete();
+  }
+
+  Future<List<UserModel>> fetchSessionParticipants(String sessionId) async {
+    List<UserModel> participants = [];
+
+    // First, get the session document to retrieve participantIds
+    DocumentSnapshot sessionDoc = await FirebaseFirestore.instance
+        .collection('studySessions')
+        .doc(sessionId)
+        .get();
+
+    if (sessionDoc.exists) {
+      List<String> participantIds =
+          List<String>.from(sessionDoc['participantIDs']);
+
+      // Then, fetch details for each participant
+      for (String id in participantIds) {
+        var userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(id).get();
+        if (userDoc.exists) {
+          UserModel user = UserModel.fromFirestore(userDoc.data()!);
+          participants.add(user);
+        }
+      }
+    }
+    return participants;
   }
 }
