@@ -6,9 +6,11 @@ import 'package:study_buddy_fl/home_pages/main_navigation.dart';
 import 'package:study_buddy_fl/login_pages/login.dart';
 import 'package:study_buddy_fl/login_pages/signup.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
+import 'package:study_buddy_fl/services/firebase_messaging.dart';
 import 'package:study_buddy_fl/study/create_session_form.dart';
 import 'package:study_buddy_fl/study/search_session.dart';
 import 'package:study_buddy_fl/study/study_page.dart';
+import 'package:dcdg/dcdg.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -25,6 +27,7 @@ void main() async {
     // If an error occurs during Firebase initialization, print an error message.
     print('Firebase connection failed: $e');
   }
+  FirebaseApi().initNotifications();
   runApp(MyApp());
 }
 

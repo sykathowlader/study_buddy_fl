@@ -60,40 +60,6 @@ class StudySessionDatabase {
         .toList(); // Convert to list and remove duplicates
   }
 
-  List<List<T>> _generateSubsets<T>(List<T> list) {
-    List<List<T>> result = [[]];
-    for (T element in list) {
-      List<List<T>> newSubsets = [];
-      for (List<T> subset in result) {
-        newSubsets.add(List.from(subset)..add(element));
-      }
-      result.addAll(newSubsets);
-    }
-    return result;
-  }
-
-  List<String> _generateCombinationsFromFields(
-      String course, String topic, String city) {
-    List<String> words = [
-      ..._sanitizeString(course).split(' '),
-      ..._sanitizeString(topic).split(' '),
-      ..._sanitizeString(city).split(' '),
-    ];
-    words = words.toSet().toList(); // Remove duplicates
-    List<List<String>> subsets = _generateSubsets(words);
-    Set<String> combinations = {};
-    for (List<String> subset in subsets) {
-      if (subset.isNotEmpty) {
-        combinations.add(subset.join(' '));
-      }
-    }
-    return combinations.toList();
-  }
-
-  String _sanitizeString(String input) {
-    return input.toLowerCase().replaceAll(RegExp('[^A-Za-z0-9 ]'), '').trim();
-  }
-
   // New method to fetch study sessions created by a specific user
   Future<List<StudySession>> fetchUserStudySessions(String userId) async {
     QuerySnapshot querySnapshot = await _db

@@ -9,25 +9,27 @@ class AuthService {
   Future<String?> signUp(String email, String password, String fullName,
       String university, String course, String studyLevel) async {
     try {
-      UserCredential result = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
 
-      // Assuming the user was created, now I'm storing their info to Firestore
-      // Extract the UID of the newly created user
-      String uid = result.user!.uid;
+      User? user = result.user;
 
-      // Creating an instance of UserDatabase with the user's UID
-      UserDatabase userDatabase = UserDatabase(uid: uid);
+      // Send email verification if user is created
+      if (user != null) {
+        await user.sendEmailVerification();
 
-      // Call the method to update the user data in Firestore
-      await userDatabase.createUserData(
-        fullName: fullName,
-        email: email,
-        university: university,
-        course: course,
-        studyLevel: studyLevel,
-      );
-      initializeUserInterests(uid);
+        // Store user info in Firestore
+        String uid = user.uid;
+        UserDatabase userDatabase = UserDatabase(uid: uid);
+        await userDatabase.createUserData(
+          fullName: fullName,
+          email: email,
+          university: university,
+          course: course,
+          studyLevel: studyLevel,
+        );
+        initializeUserInterests(uid);
+      }
 
       return null; // No error
     } on FirebaseAuthException catch (e) {
@@ -37,7 +39,6 @@ class AuthService {
         return e.message; // Generic error message
       }
     } catch (e) {
-      //print(e.toString());
       return 'An error occurred, please try again later.';
     }
   }

@@ -141,13 +141,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           actions: <Widget>[
                             TextButton(
                               onPressed: () => Navigator.of(context)
-                                  .pop(false), // User pressed "No"
-                              child: Text('No'),
+                                  .pop(true), // User pressed "Yes"
+                              child: Text('Yes'),
                             ),
                             TextButton(
                               onPressed: () => Navigator.of(context)
-                                  .pop(true), // User pressed "Yes"
-                              child: Text('Yes'),
+                                  .pop(false), // User pressed "No"
+                              child: Text('No'),
                             ),
                           ],
                         );

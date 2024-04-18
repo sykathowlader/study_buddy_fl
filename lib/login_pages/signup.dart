@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:study_buddy_fl/login_pages/verify_email.dart';
 import 'package:study_buddy_fl/services/auth.dart';
 import 'package:study_buddy_fl/widgets/signup_widgets/list_unis.dart';
 import 'package:study_buddy_fl/widgets/reusable/loading.dart';
@@ -92,14 +93,14 @@ class _SignupState extends State<Signup> {
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        // Regular expression for email validation
+                        // Regular expression for validating emails that end with .ac.uk
                         String pattern =
-                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([a-zA-Z\-0-9]+\.)+ac\.uk)$';
                         RegExp regex = RegExp(pattern);
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
                         } else if (!regex.hasMatch(value)) {
-                          return 'Enter a valid email address';
+                          return 'Enter a valid university email address (ending with .ac.uk)';
                         }
                         return null; // Return null if the input is valid
                       },
@@ -196,13 +197,16 @@ class _SignupState extends State<Signup> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          // Use AuthService to sign up
+                          // Indicate loading
                           setState(() {
                             loading = true;
                           });
+
+                          // Extract study level string
                           String studyLevelString =
                               _studyLevel.toString().split('.').last;
 
+                          // Attempt to sign up
                           String? signUpError = await _authService.signUp(
                             _emailController.text,
                             _passwordController.text,
@@ -213,14 +217,22 @@ class _SignupState extends State<Signup> {
                           );
 
                           if (signUpError == null) {
-                            // Sign up successful, navigate to home
-                            loading = false;
+                            // Sign up was successful
+                            setState(() {
+                              loading = false;
+                            });
 
-                            Navigator.pushReplacementNamed(
-                                context, '/main_navigation');
+                            // Navigate to the email verification page
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VerifyEmailPage()),
+                            );
                           } else {
                             // Sign up failed, show an error message
-                            loading = false;
+                            setState(() {
+                              loading = false;
+                            });
                             final snackBar =
                                 SnackBar(content: Text(signUpError));
                             ScaffoldMessenger.of(context)

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:study_buddy_fl/login_pages/verify_email.dart';
 import 'package:study_buddy_fl/services/auth.dart';
 import 'package:study_buddy_fl/widgets/reusable/loading.dart';
 
@@ -112,8 +113,17 @@ class _Login2State extends State<Login> {
                               _emailController.text, _passwordController.text);
                           if (user != null) {
                             // Sign in successful
-                            Navigator.pushReplacementNamed(
-                                context, '/main_navigation');
+                            if (!user.emailVerified) {
+                              // If user's email is not verified, navigate to VerifyEmailPage
+                              setState(() => loading = false);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => VerifyEmailPage()));
+                            } else {
+                              // If email is verified, navigate to main navigation
+                              Navigator.pushReplacementNamed(
+                                  context, '/main_navigation');
+                            }
                           } else {
                             // Sign in failed
                             setState(() => loading = false);
@@ -144,7 +154,7 @@ class _Login2State extends State<Login> {
                     ),
                     SizedBox(height: 30),
 
-                    // Divider (Or Sign in with)
+                    /* // Divider (Or Sign in with)
                     Row(
                       children: <Widget>[
                         Expanded(child: Divider(thickness: 2)),
@@ -184,8 +194,8 @@ class _Login2State extends State<Login> {
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(height: 30),
+                    ), */
+                    //SizedBox(height: 30),
 
                     // Sign Up Button
                     Center(
