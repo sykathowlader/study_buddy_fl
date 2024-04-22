@@ -13,9 +13,11 @@ class EditProfileDialog {
     // Initialize form key
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+// Options for study level dropdown
     List<String> _studyLevelOptions = ['undergraduate', 'postgraduate'];
     String? _selectedStudyLevel = currentStudyLevel;
 
+// all the text controller will be pre-populated with user data
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -68,6 +70,7 @@ class EditProfileDialog {
                           return null;
                         },
                       ),
+                      // Dropdown items from _studyLevelOptions
                       DropdownButtonFormField<String>(
                         value: _selectedStudyLevel,
                         decoration: InputDecoration(labelText: 'Study Level'),

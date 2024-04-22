@@ -78,4 +78,16 @@ class AuthService {
       'interests': [],
     });
   }
+
+  // Method to send password reset email
+  Future<String?> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return null; // Return null if successful
+    } on FirebaseAuthException catch (e) {
+      return e.message; // Return error message if an exception occurs
+    } catch (e) {
+      return 'An error occurred, please try again later.'; // Return a generic error message for any other exceptions
+    }
+  }
 }

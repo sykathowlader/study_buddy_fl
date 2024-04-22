@@ -6,16 +6,19 @@ import 'package:study_buddy_fl/services/auth.dart';
 import 'package:study_buddy_fl/widgets/reusable/loading.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
-  _Login2State createState() => _Login2State();
+  _LoginState createState() => _LoginState();
 }
 
-class _Login2State extends State<Login> {
+class _LoginState extends State<Login> {
   bool _isObscure = true; // State for password visibility
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<
+      FormState>(); // helps managing the state of a form from anywhere in the widget
   bool loading = false;
 
   @override
@@ -33,17 +36,18 @@ class _Login2State extends State<Login> {
         : Scaffold(
             body: SingleChildScrollView(
               padding: EdgeInsets.all(16.0),
+              //creating the form for email and password
               child: Form(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    SizedBox(height: 20), // Adjust the size to fit your design
-                    // Logo - Replace with your image asset
+                    SizedBox(height: 20),
+                    // Logo of Study Buddy
                     Image.asset(
-                      'assets/sb_logo.png', // Replace with your logo asset path
-                      height: 120, // Set your logo's height
+                      'assets/sb_logo.png',
+                      height: 120, // logo's height
                     ),
                     SizedBox(height: 20),
 
@@ -68,7 +72,8 @@ class _Login2State extends State<Login> {
                     ),
                     SizedBox(height: 20),
 
-                    // Password TextField
+                    // Password TextField with lock icon
+                    // password can be obscured
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
@@ -95,7 +100,7 @@ class _Login2State extends State<Login> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // TODO: Implement forget password functionality
+                          Navigator.pushNamed(context, '/reset_password');
                         },
                         child: Text('Forget Password?'),
                       ),

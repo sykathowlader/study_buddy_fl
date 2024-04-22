@@ -16,7 +16,7 @@ class InterestsSection extends StatefulWidget {
 }
 
 class _InterestSectionState extends State<InterestsSection> {
-  late List<String> interests = [];
+  late List<String> interests = []; // Holds the list of interests for the user.
   final TextEditingController _controller = TextEditingController();
 
   @override
@@ -25,6 +25,7 @@ class _InterestSectionState extends State<InterestsSection> {
     fetchInterests();
   }
 
+  // Fetches interests from Firestore and updates the local list.
   void fetchInterests() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('userInterests')
@@ -67,7 +68,8 @@ class _InterestSectionState extends State<InterestsSection> {
                     backgroundColor: Colors.green[200],
                     deleteIconColor: Colors.white,
                     onDeleted: widget.modifyInterest
-                        ? () => _removeInterest(interest)
+                        ? () => _removeInterest(
+                            interest) // Optional delete function based on modifyInterest flag.
                         : null,
                   ))
               .toList(),
@@ -79,7 +81,7 @@ class _InterestSectionState extends State<InterestsSection> {
               labelText: 'Add interest',
               suffixIcon: IconButton(
                 icon: Icon(Icons.add),
-                onPressed: _addInterest,
+                onPressed: _addInterest, // Button to add a new interest.
               ),
               border: InputBorder.none,
             ),
@@ -88,17 +90,19 @@ class _InterestSectionState extends State<InterestsSection> {
     );
   }
 
+// Adds a new interest to the list and updates Firestore.
   void _addInterest() {
     final interest = _controller.text.trim();
     if (interest.isNotEmpty && !interests.contains(interest)) {
       setState(() {
         interests.add(interest);
       });
-      _controller.clear();
+      _controller.clear(); // Clear input field after adding.
       _updateInterestsInFirestore();
     }
   }
 
+  // Removes an interest from the list and updates Firestore.
   void _removeInterest(String interest) {
     setState(() {
       interests.remove(interest);
@@ -106,6 +110,7 @@ class _InterestSectionState extends State<InterestsSection> {
     _updateInterestsInFirestore();
   }
 
+// Updates the interests array in Firestore for the current user.
   Future<void> _updateInterestsInFirestore() async {
     await FirebaseFirestore.instance
         .collection('userInterests')

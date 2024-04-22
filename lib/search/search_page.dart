@@ -26,8 +26,6 @@ class _SearchPageState extends State<SearchPage> {
         _generateSearchKeywords(fullName, university, course);
 
     if (searchKeywords.isNotEmpty) {
-      // This is a simplified example. In practice, you might need to handle this differently,
-      // as Firestore does not support querying for multiple arrayContains in a single query.
       query = query.where('searchKeywords', arrayContainsAny: searchKeywords);
     }
 
@@ -96,7 +94,7 @@ class _SearchPageState extends State<SearchPage> {
         _courseController.text,
       );
 
-      // Navigate to your results page
+      // Navigate to results page
       if (users.isEmpty) {
         // If no users found, show a message or handle as needed
         showDialog(

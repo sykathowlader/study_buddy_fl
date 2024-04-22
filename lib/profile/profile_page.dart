@@ -71,13 +71,13 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchUserInterests();
   }
 
+// method to fetch user interests
   Future<void> fetchUserInterests() async {
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('userInterests')
         .doc(widget.userId)
         .get();
 
-    // Cast snapshot.data() to Map<String, dynamic> to ensure the correct type.
     Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>?;
 
     if (snapshot.exists && data != null && data.containsKey('interests')) {
@@ -88,6 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+// method to fetch users
   Future<Map<String, dynamic>?> fetchUserData() async {
     try {
       DocumentSnapshot userDoc =
@@ -99,6 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // method to fetch user data and populte the controllers that are responsible to show the data in the UI
   Future<void> _fetchUserDataAndPopulateFields() async {
     setState(() {
       _isLoading = true; // Start loading
@@ -129,6 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
         actions: [
           if (widget.isUserProfile)
             IconButton(
+              //logout button
               icon: Icon(Icons.exit_to_app),
               onPressed: () async {
                 // Show a dialog to confirm log out
@@ -165,6 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           if (widget.isUserProfile)
             IconButton(
+                //edit button
                 icon: Icon(Icons.edit),
                 onPressed: () async {
                   if (_userData != null) {
@@ -209,6 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               // adding a gesture detector to see the full profile picture
                               GestureDetector(
+                                // when the user clicks on the picture picture  it will expand the picture
                                 onTap: () {
                                   showDialog(
                                     context: context,
@@ -225,6 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   );
                                 },
                                 child: CircleAvatar(
+                                  //displaying the profile picture
                                   radius: 50,
                                   backgroundImage: NetworkImage(
                                     userData['profileImageUrl'] ??
@@ -238,6 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
+                                  // button to add or remove photo
                                   child: IconButton(
                                     icon: Icon(Icons.add_a_photo,
                                         color: Colors.green),
@@ -279,19 +286,25 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         SizedBox(height: 16),
+                        //full name
                         Text(
                           userData['fullName'] ?? 'Name not available',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
+                        //university
                         SizedBox(height: 8),
                         Text(userData['university'] ??
                             'University not available'),
                         SizedBox(height: 4),
+                        //course
                         Text(userData['course'] ?? 'Course not available'),
                         SizedBox(height: 4),
+                        //study level
                         Text('Study Level: ${userData['studyLevel']}'),
                         SizedBox(height: 10),
+
+                        // If it's the user's Profile Page, a list of connection of that user will be shown
                         if (widget.isUserProfile)
                           FutureBuilder<int>(
                             future:
@@ -304,9 +317,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                     // Navigate to the ConnectionsListScreen on tap
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => ConnectionsListScreen(
-                                            currentUserId: widget
-                                                .userId), // Ensure you pass the current user's ID correctly
+                                        builder: (context) =>
+                                            ConnectionsListScreen(
+                                                currentUserId: widget.userId),
                                       ),
                                     );
                                   },
@@ -322,6 +335,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               }
                             },
                           ),
+                        //if the profile page is of another user, for example from the search user page,
+                        //then a connect and message option will be avaiable
                         if (!widget.isUserProfile)
                           ConnectionMessageBars(
                             targetUserId: widget.userId,

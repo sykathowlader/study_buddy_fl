@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/firebase_options.dart';
 import 'package:study_buddy_fl/home_pages/main_navigation.dart';
+import 'package:study_buddy_fl/login_pages/forgot_pass_screen.dart';
 import 'package:study_buddy_fl/login_pages/login.dart';
 import 'package:study_buddy_fl/login_pages/signup.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
@@ -10,14 +11,13 @@ import 'package:study_buddy_fl/services/firebase_messaging.dart';
 import 'package:study_buddy_fl/study/create_session_form.dart';
 import 'package:study_buddy_fl/study/search_session.dart';
 import 'package:study_buddy_fl/study/study_page.dart';
-import 'package:dcdg/dcdg.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    // Try to initialize Firebase with the options for the current platform.
+    // Trying to initialize Firebase with the options for the current platform.
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -34,7 +34,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,6 +63,7 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => Signup(),
         '/main_navigation': (context) => MainNavigation(),
         '/search_sessions': (context) => SessionSearchForm(),
+        '/reset_password': (context) => ResetPasswordPage(),
       },
     );
   }

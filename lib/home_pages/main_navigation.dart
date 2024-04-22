@@ -2,7 +2,6 @@
 
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
-import "package:study_buddy_fl/home_pages/home_page.dart";
 import "package:study_buddy_fl/message/message_page.dart";
 import "package:study_buddy_fl/profile/profile_page.dart";
 import "package:study_buddy_fl/search/search_page.dart";

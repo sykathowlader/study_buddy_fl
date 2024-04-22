@@ -24,6 +24,7 @@ class _ConnectionMessageBarsState extends State<ConnectionMessageBars> {
     checkInitialConnection();
   }
 
+//if the user is alreaady connected then Connected text will appear if not connect text will appear
   Future<void> checkInitialConnection() async {
     final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     final DocumentReference connectionDoc =
@@ -39,6 +40,7 @@ class _ConnectionMessageBarsState extends State<ConnectionMessageBars> {
     }
   }
 
+// method to connect users
   Future<void> toggleConnection() async {
     final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     final DocumentReference connectionDoc =

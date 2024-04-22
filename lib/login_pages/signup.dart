@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// sign up page UI
 
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/login_pages/verify_email.dart';
@@ -94,6 +94,7 @@ class _SignupState extends State<Signup> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         // Regular expression for validating emails that end with .ac.uk
+
                         String pattern =
                             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([a-zA-Z\-0-9]+\.)+ac\.uk)$';
                         RegExp regex = RegExp(pattern);

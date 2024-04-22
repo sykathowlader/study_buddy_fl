@@ -1,3 +1,4 @@
+// Widget to see the list of connections
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
 import 'package:study_buddy_fl/search/user_model.dart';
@@ -17,7 +18,9 @@ class ConnectionsListScreen extends StatelessWidget {
         title: Text('Connections'),
       ),
       body: FutureBuilder<List<UserModel>>(
-        future: _profilePageServices.fetchUserConnections(currentUserId),
+        // FutureBuilder to fetch list of User models
+        future: _profilePageServices.fetchUserConnections(
+            currentUserId), // Fetching connections of the user.
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -27,18 +30,21 @@ class ConnectionsListScreen extends StatelessWidget {
             return Center(child: Text('No connections found.'));
           }
 
+          // creating a list of users with their profile pictures and info
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               UserModel user = snapshot.data![index];
               return ListTile(
                 leading: CircleAvatar(
+                  // profile image
                   backgroundImage: NetworkImage(user.profileImageUrl ??
                       'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1095249842.jpg'),
                 ),
                 title: Text(user.fullName),
                 subtitle: Text("${user.course}, ${user.university}"),
                 onTap: () {
+                  //navigation to the profile page
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => ProfilePage(
