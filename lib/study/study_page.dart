@@ -27,7 +27,7 @@ class StudyPage extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1, // Takes 2/3 of the space
+                    flex: 1, // Takes half of the space
                     child: OptionCard(
                       title: "Join a Session",
                       color: Colors.blue.shade300, // Example color
@@ -37,7 +37,7 @@ class StudyPage extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    flex: 1, // Takes 1/3 of the space
+                    flex: 1, // Takes half of the space
                     child: OptionCard(
                       title: "Create a Session",
                       color: Colors.green.shade300, // Example color

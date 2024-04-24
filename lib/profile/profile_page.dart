@@ -14,10 +14,12 @@ import 'package:study_buddy_fl/services/storage_service.dart';
 import 'package:study_buddy_fl/services/user_database.dart';
 
 // This is the profile page where the user can see its information and edit in case needed
-
 class ProfilePage extends StatefulWidget {
+  // this flag allows to know if the profile page is of the current logged in user, who
+  // can perform special operations, such as editing user details
   final bool isUserProfile;
   final String userId;
+  // this flag allows to know if the user can modify the interests
   final bool modifyInterest;
 
   const ProfilePage(

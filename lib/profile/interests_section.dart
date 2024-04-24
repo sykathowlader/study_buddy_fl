@@ -60,6 +60,8 @@ class _InterestSectionState extends State<InterestsSection> {
           ],
         ),
         SizedBox(height: 10),
+
+        // Displays interests as chips that can be deleted if modifyInterest is true.
         Wrap(
           spacing: 8.0,
           children: interests
@@ -75,13 +77,14 @@ class _InterestSectionState extends State<InterestsSection> {
               .toList(),
         ),
         if (widget.modifyInterest)
+          // Text field for adding new interests.
           TextField(
             controller: _controller,
             decoration: InputDecoration(
               labelText: 'Add interest',
               suffixIcon: IconButton(
                 icon: Icon(Icons.add),
-                onPressed: _addInterest, // Button to add a new interest.
+                onPressed: _addInterest,
               ),
               border: InputBorder.none,
             ),

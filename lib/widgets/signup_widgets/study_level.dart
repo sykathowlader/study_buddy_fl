@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 enum StudyLevel { undergraduate, postgraduate }
 
+// StudyLevelSelector is a StatefulWidget that allows users to select their study level.
+
 class StudyLevelSelector extends StatefulWidget {
   final Function(StudyLevel?) onSelectionChanged;
 
@@ -22,10 +24,12 @@ class _StudyLevelSelectorState extends State<StudyLevelSelector> {
           'Select your study level:',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
+        // Radio button for the Undergraduate option.
         RadioListTile<StudyLevel>(
           title: const Text('Undergraduate'),
           value: StudyLevel.undergraduate,
           groupValue: _selectedStudyLevel,
+          // Update state and notify parent widget on change.
           onChanged: (StudyLevel? value) {
             setState(() {
               _selectedStudyLevel = value;
@@ -33,6 +37,7 @@ class _StudyLevelSelectorState extends State<StudyLevelSelector> {
             widget.onSelectionChanged(value);
           },
         ),
+        // Radio button for the Postgraduate option.
         RadioListTile<StudyLevel>(
           title: const Text('Postgraduate'),
           value: StudyLevel.postgraduate,

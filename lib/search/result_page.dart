@@ -11,7 +11,8 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-
+// It will apppear as a list of users with their profile picture, name, university and course.
+// clicking on the user will lead to the profile page
     return Scaffold(
       appBar: AppBar(title: Text('Search Results')),
       body: ListView.builder(
@@ -28,7 +29,7 @@ class ResultsPage extends StatelessWidget {
             subtitle: Text(subtitleText),
             onTap: () {
               bool isUserProfile = user.userId == currentUserId;
-              // Assuming you have a modified ProfilePage that accepts a userId
+
               Navigator.push(
                   context,
                   MaterialPageRoute(

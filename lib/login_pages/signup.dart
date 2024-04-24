@@ -1,5 +1,7 @@
 // sign up page UI
 
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/login_pages/verify_email.dart';
 import 'package:study_buddy_fl/services/auth.dart';
@@ -94,6 +96,9 @@ class _SignupState extends State<Signup> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         // Regular expression for validating emails that end with .ac.uk
+                        // the common regular expression to check for normal emails was found here:
+                        //https://stackoverflow.com/questions/16800540/how-should-i-check-if-the-input-is-an-email-address-in-flutter
+                        // the expression was modified only to only validate emails ending in .ac.uk
 
                         String pattern =
                             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@(([a-zA-Z\-0-9]+\.)+ac\.uk)$';

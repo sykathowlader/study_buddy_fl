@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
@@ -47,6 +47,7 @@ class _MainNavigationState extends State<MainNavigation> {
       // using indexstack I am preserving the state of the pages.
       //If I navigate from search page to message page and then again to search page
       // I will see the state of search page as I left before.
+      // The use of IndexStack was suggested from Net Ninja youtube tutorial in the playlist Flutter & Firebase app build
       body: IndexedStack(
         index: current_index,
         children: _pages,
@@ -59,12 +60,6 @@ class _MainNavigationState extends State<MainNavigation> {
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         items: [
-          /* BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-            backgroundColor: Colors.green[300],
-          ),
-           */
           BottomNavigationBarItem(
             icon: Icon(Icons.event_note),
             label: "Study Session",

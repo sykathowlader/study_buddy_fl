@@ -2,6 +2,7 @@ import "package:cloud_firestore/cloud_firestore.dart";
 import "package:study_buddy_fl/search/user_model.dart";
 import "package:study_buddy_fl/study/study_session_model.dart";
 
+// methods to add, update users were mainly taken and adapted from Youtube Tutorial playlist of Net Ninja called Flutter & Firebase app build
 class UserDatabase {
   final String uid;
 
@@ -12,6 +13,7 @@ class UserDatabase {
       FirebaseFirestore.instance.collection('users');
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+// adding a user to Firebase
   Future<void> createUserData({
     required String fullName,
     required String email,
@@ -36,6 +38,7 @@ class UserDatabase {
     await userCollection.doc(uid).set(userData);
   }
 
+// updating user details to firebse
   Future<void> updateUserData({
     required String fullName,
     required String email,
@@ -150,6 +153,7 @@ class UserDatabase {
         .toList();
   }
 
+// method to get the stream of user interests.
   Stream<List<String>> getUserInterestsStream(String userId) {
     return FirebaseFirestore.instance
         .collection('userInterests')

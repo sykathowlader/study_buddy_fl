@@ -43,6 +43,7 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
     _isRecurring = widget.session?.isRecurring ?? false;
   }
 
+// UI of the form to create a session
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -86,6 +87,8 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: null, // Allows input to wrap to a new line
               ),
+
+              //selection of the date
               ListTile(
                 title: Text(
                     'Date: ${DateFormat('dd-MM-yyyy').format(_selectedDate)}'),
@@ -104,6 +107,8 @@ class _CreateSessionFormState extends State<CreateSessionForm> {
                   }
                 },
               ),
+
+              // selection of the time
               ListTile(
                 title: Text('Time: ${_selectedTime.format(context)}'),
                 trailing: Icon(Icons.access_time),

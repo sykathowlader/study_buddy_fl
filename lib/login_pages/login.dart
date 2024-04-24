@@ -102,7 +102,7 @@ class _LoginState extends State<Login> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/reset_password');
                         },
-                        child: Text('Forget Password?'),
+                        child: Text('Forgot Password?'),
                       ),
                     ),
                     SizedBox(height: 20),

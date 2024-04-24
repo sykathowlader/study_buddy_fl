@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// study session model
 class StudySession {
   String? sessionId;
   String courseId;
@@ -36,7 +37,7 @@ class StudySession {
     DateTime fullDateTime =
         DateTime(date.year, date.month, date.day, time.hour, time.minute);
     return {
-      'sessionId': sessionId, // You may or may not want to store sessionId
+      'sessionId': sessionId,
       'courseId': courseId,
       'userId': userId,
       'topic': topic,

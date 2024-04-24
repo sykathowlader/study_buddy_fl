@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/study/study_session_model.dart';
 import 'package:study_buddy_fl/study/upcoming_session.dart';
 
+// search page to join a session
 class SessionSearchForm extends StatefulWidget {
   @override
   _SessionSearchFormState createState() => _SessionSearchFormState();
@@ -74,11 +75,6 @@ class _SessionSearchFormState extends State<SessionSearchForm> {
               doc.data() as Map<String, dynamic>, doc.id))
           .toList();
     });
-  }
-
-  String _sanitizeAndCombineInputs(String input) {
-    // Remove commas and spaces, and convert to lowercase for broad matching
-    return input.toLowerCase().replaceAll(RegExp('[^A-Za-z0-9]'), '');
   }
 
   List<String> _generateSearchKeywords(

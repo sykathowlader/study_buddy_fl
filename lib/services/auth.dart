@@ -5,6 +5,7 @@ import 'package:study_buddy_fl/services/user_database.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  //these methods were mainly taken and adapted from Youtube Tutorial playlist of Net Ninja called Flutter & Firebase app build
   // Sign up with email and password
   Future<String?> signUp(String email, String password, String fullName,
       String university, String course, String studyLevel) async {

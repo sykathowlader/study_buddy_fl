@@ -37,12 +37,12 @@ class StudySessionDatabase {
   }
 
   List<String> _generateSearchKeywords(
-      String fullName, String university, String course) {
+      String course, String topic, String city) {
     Set<String> keywords = {};
     // Break down each field into words and add them to the keywords set
-    keywords.addAll(fullName.toLowerCase().split(' '));
-    keywords.addAll(university.toLowerCase().split(' '));
     keywords.addAll(course.toLowerCase().split(' '));
+    keywords.addAll(topic.toLowerCase().split(' '));
+    keywords.addAll(city.toLowerCase().split(' '));
 
     // Generate all possible combinations of keywords to enhance searchability
     List<String> combinations = [];
@@ -122,10 +122,12 @@ class StudySessionDatabase {
 //       });
 // }
 
+  // method to delete a study session
   Future<void> deleteStudySession(String sessionId) async {
     await _db.collection('studySessions').doc(sessionId).delete();
   }
 
+// method to retrieve participants from a session
   Future<List<UserModel>> fetchSessionParticipants(String sessionId) async {
     List<UserModel> participants = [];
 

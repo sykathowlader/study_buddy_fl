@@ -1,3 +1,6 @@
+// this is the user model
+// contains all the fields associated to the user
+
 class UserModel {
   final String userId;
   final String fullName;
@@ -17,6 +20,7 @@ class UserModel {
     required this.studyLevel,
   });
 
+// method to get the user data from firestore
   factory UserModel.fromFirestore(Map<String, dynamic> firestore) {
     return UserModel(
       userId: firestore['userId'] as String,

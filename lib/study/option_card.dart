@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// the customized card as the session will appear to the UI
 class OptionCard extends StatelessWidget {
   final String title;
   final Color color;

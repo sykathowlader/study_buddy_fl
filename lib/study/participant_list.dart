@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/profile/profile_page.dart';
 import 'package:study_buddy_fl/search/user_model.dart';
 
+//Viewing the participant of a particular session
 class SessionParticipantsList extends StatelessWidget {
   final List<UserModel> participants;
 

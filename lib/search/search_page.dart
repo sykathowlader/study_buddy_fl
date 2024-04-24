@@ -20,7 +20,6 @@ class _SearchPageState extends State<SearchPage> {
       String fullName, String university, String course) async {
     // Create a query against the collection.
     Query query = FirebaseFirestore.instance.collection('users');
-
     // Generate search keywords from the input fields
     List<String> searchKeywords =
         _generateSearchKeywords(fullName, university, course);
@@ -28,10 +27,8 @@ class _SearchPageState extends State<SearchPage> {
     if (searchKeywords.isNotEmpty) {
       query = query.where('searchKeywords', arrayContainsAny: searchKeywords);
     }
-
     // Execute the query
     QuerySnapshot snapshot = await query.get();
-
     // Map the documents to UserModel
     return snapshot.docs
         .map((doc) =>
@@ -122,6 +119,7 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+// UI for the search page, it includes full name, university and course
   @override
   Widget build(BuildContext context) {
     return Scaffold(

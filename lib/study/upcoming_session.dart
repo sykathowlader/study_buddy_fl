@@ -8,8 +8,10 @@ import 'package:study_buddy_fl/search/user_model.dart';
 import 'package:study_buddy_fl/services/study_session_service.dart';
 import 'package:study_buddy_fl/study/create_session_form.dart';
 import 'package:study_buddy_fl/study/participant_list.dart';
-import 'study_session_model.dart'; // Correct the import path according to your project structure
+import 'study_session_model.dart';
 
+// this class is reponsible of the viewing of the study session to the UI of Study Page
+//and when the user searches for sessions.
 class UpcomingSessionsList extends StatelessWidget {
   final Stream<List<StudySession>>? customStream;
   final bool isEditable;
@@ -44,6 +46,7 @@ class UpcomingSessionsList extends StatelessWidget {
               child: Text("No upcoming sessions found. Join or create one."));
         }
 
+        // method to get a list of filtered study sessions
         List<StudySession> filteredSessions = snapshot.data!.where((session) {
           DateTime sessionDate = session.date;
           if (!session.isRecurring && sessionDate.isBefore(now)) {
@@ -68,6 +71,7 @@ class UpcomingSessionsList extends StatelessWidget {
               child: Text("No upcoming sessions found. Join or create one."));
         }
 
+// displaying the sessions to the UI
         return ListView.builder(
           itemCount: filteredSessions.length,
           itemBuilder: (context, index) {
@@ -213,7 +217,7 @@ class UpcomingSessionsList extends StatelessWidget {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled:
-                                    true, // Set to true if your form is lengthy
+                                    true, // Set to true if form is lengthy
                                 builder: (BuildContext context) {
                                   return Padding(
                                     padding: MediaQuery.of(context)

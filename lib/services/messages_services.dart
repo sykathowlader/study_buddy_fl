@@ -4,6 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:study_buddy_fl/message/message.dart';
 
+// the functions of this class were taken and adapted from Youtube tutorial - Chat Messenger App • Full Tutorial from scratch / Flutter x Firebase
+// by Mitch Koko
+
 class MessageService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
@@ -47,6 +50,7 @@ class MessageService extends ChangeNotifier {
     });
   }
 
+// function to retrieve a stream of chat messages from Firebase
   Stream<QuerySnapshot> getMessages(String userId, String otherUserId) {
     List<String> ids = [userId, otherUserId];
     ids.sort();

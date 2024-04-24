@@ -33,6 +33,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     super.dispose();
   }
 
+// building the UI
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;

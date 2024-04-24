@@ -69,6 +69,7 @@ class _ConnectionMessageBarsState extends State<ConnectionMessageBars> {
     setState(() {}); // Update UI to reflect the change
   }
 
+// when the curret user is looking at other user profile's he has to option, to connect and to message that user
   @override
   Widget build(BuildContext context) {
     return Row(

@@ -17,6 +17,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
+// method that is calling sendPasswordResetEmail from authservice
   Future<void> _resetPassword() async {
     String? result =
         await _authService.sendPasswordResetEmail(_emailController.text.trim());
@@ -26,11 +27,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
+        // showing in a nackbar the message
         SnackBar(content: Text(result)),
       );
     }
   }
 
+// building the UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
